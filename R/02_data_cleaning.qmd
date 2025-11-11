@@ -1,0 +1,296 @@
+---
+title: "Data Cleaning"
+author: "Galey Wangmo"
+format: html
+editor: visual
+---
+
+### 01. Load Required Libraries
+This section loads all necessary R packages used for data cleaning, transformation, and visualization.
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+library(digest)
+library(lubridate)
+library(ggplot2)
+library(scales)
+```
+
+### 02 Load Merged Datasets
+This section imports the merged attendance and waitlist datasets from the output folder for further cleaning and analysis.
+
+```{r}
+# Define output folder
+output_dir <- here("output")
+
+# Read merged datasets
+attendance_all_years <- read.csv(file.path(output_dir, "attendance_all_years.csv"))
+waitlist_all_years <- read.csv(file.path(output_dir, "waitlist_all_years.csv"))
+```
+
+### 03. Exploratory Data Analysis
+This section explores the dataset structure,and examines missing values before cleaning.
+
+```{r}
+glimpse(attendance_all_years)
+str(attendance_all_years)
+sum(is.na(attendance_all_years))
+```
+
+### 04. Data Cleaning
+This section performs column renaming, removes duplicates and redundant fields, converts data types, handles missing values, and generates a unique student ID.
+
+#### 4.1 Check for Potential Duplicate Columns
+
+```{r}
+# Preview potential duplicate columns across datasets 
+attendance_all_years %>% select(First.name, First.Name) %>% head(10)
+attendance_all_years %>% select(Last.name, Last.Name) %>% head(10)
+attendance_all_years %>% select(Organisation, Organisation.Company, Organisation.company) %>% head(10)
+attendance_all_years %>% select(School.or.faculty, School.faculty) %>% head(10)
+```
+
+#### 4.2 Compare Missing Values in Duplicate Columns
+
+```{r}
+# Sumarize the number of missing (NA) values in potentially duplicated columns 
+# to identify which versions contain usable data before merging or dropping
+attendance_all_years %>%
+  summarise(
+    First.name_NA = sum(is.na(First.name)),
+    First.Name_NA = sum(is.na(First.Name)),
+    Last.name_NA  = sum(is.na(Last.name)),
+    Last.Name_NA  = sum(is.na(Last.Name)),
+    Organisation_NA = sum(is.na(Organisation)),
+    Organisation.Company_NA = sum(is.na(Organisation.Company)),
+    Organisation.company_NA = sum(is.na(Organisation.company)),
+    School.or.faculty_NA = sum(is.na(School.or.faculty)),
+    School.faculty_NA= sum(is.na(School.faculty))
+    )
+```
+
+#### 4.3 Drop Redundant Columns
+
+```{r}
+# Drop redundant columns
+attendance_all_years <- attendance_all_years %>%
+  select(-First.Name, -Last.Name, -Organisation.Company, -Organisation.company, -School.faculty)
+```
+
+#### 4.4 Clean Column Names
+
+```{r}
+# Rename key workshop
+attendance_all_years <- attendance_all_years %>%
+  janitor::clean_names()
+names(attendance_all_years)
+```
+
+#### 4.5 Check for Duplicate Rows
+
+```{r}
+# Find duplicate rows
+duplicates <- attendance_all_years[duplicated(attendance_all_years), ]
+head(duplicates)
+```
+
+#### 4.6 Drop Columns with >80% Missing Values
+
+```{r}
+# Calculate and sort missing value percentages by column
+na_percent <- colMeans(is.na(attendance_all_years)) * 100
+sort(na_percent, decreasing = TRUE)
+# Drop columns with more than 80% missing values
+attendance_all_years <- attendance_all_years %>%
+  select(-which(na_percent>80))
+nrow(attendance_all_years)
+```
+
+#### 4.7 Remove Columns with One Unique Value
+
+```{r}
+# Check unique values
+unique_counts <- sapply(attendance_all_years, \(x) length(unique(x)))
+sort(unique_counts)
+
+# Remove columns that have only one unique value
+attendance_all_years <- attendance_all_years %>%
+  select(where(~ n_distinct(.) > 1))
+```
+
+#### 4.8 Convert Dates and Datetimes
+
+```{r}
+# # Convert event column to appropriate data type
+attendance_all_years$event_date <- as.Date(attendance_all_years$event_date, format = "%d/%m/%Y")
+
+# Convert order_date_time to datetime and separate into order_date and order_time columns
+attendance_all_years <- attendance_all_years %>%
+  # Convert order_date_time from text to proper datetime (POSIXct)
+  mutate(order_date_time = as.POSIXct(order_date_time, format = "%Y-%m-%d %I:%M %p")) %>%
+  
+  # Create separate date and time columns
+  mutate(
+    order_date = as.Date(order_date_time),                # extract date only
+    order_time = format(order_date_time, "%H:%M:%S")      # extract time as string (24-hour)
+  )
+```
+
+#### 4.9 Generate Student ID (Hashed)
+
+```{r}
+# Standardize and Generate Student ID
+attendance_all_years <- attendance_all_years %>%
+  mutate(
+    email = tolower(trimws(email)),
+  ) %>%
+  rowwise() %>%
+  mutate(student_id = digest(paste(
+    coalesce(email, "")
+  ), algo = "sha256")) %>%
+  ungroup()
+```
+
+```{r}
+# Check if any email is linked to more than one student ID
+attendance_all_years %>%
+  group_by(email) %>%
+  summarise(unique_ids = n_distinct(student_id)) %>%
+  filter(unique_ids > 1)
+```
+
+```{r}
+# Identify and inspect records where the same email is associated with multiple student IDs
+attendance_all_years %>%
+  filter(email %in% (
+    attendance_all_years %>%
+      group_by(email) %>%
+      summarise(unique_ids = n_distinct(student_id)) %>%
+      filter(unique_ids > 1) %>%
+      pull(email)
+  )) %>%
+  select(email, first_name, last_name,student_id) %>%
+  arrange(email)
+
+```
+
+#### 4.10 Identify and Remove Duplicate Participant–Event Records (same email registered multiple times for same workshop)
+
+```{r}
+# Identify Duplicate Registrations (Same Email + Event)
+attendance_all_years %>%
+  count(student_id, event) %>%
+  filter(n > 1)
+
+attendance_all_years %>%
+  filter(duplicated(select(., student_id, event)) | duplicated(select(., student_id, event), fromLast = TRUE))
+
+# remove duplicate participant-event records
+attendance_all_years <- attendance_all_years %>%
+  distinct(student_id, event, .keep_all = TRUE)
+```
+
+### 05 Summaries
+This section provides a summary of workshop participation, including total records, number of unique participants, participants by workshop and date, and the number of workshops attended per person.
+
+```{r}
+# Total records
+attendance_all_years %>% summarise(total_rows = n())
+
+# Total number of unique participants
+attendance_all_years %>%
+  summarise(unique_participants = n_distinct(student_id))
+
+# Total participants by workshop/event
+attendance_all_years %>%
+  group_by(event) %>%
+  summarise(total_participants = n_distinct(student_id)) %>%
+  arrange(desc(total_participants))
+
+# Total participants by workshop and date
+attendance_all_years %>%
+  group_by(event, event_date) %>%
+  summarise(total_participants = n_distinct(student_id)) %>%
+  arrange(event, event_date)
+
+# Number of workshops attended per person
+attendance_all_years %>%
+  group_by(student_id) %>%
+  summarise(workshops_attended = n_distinct(event)) %>%
+  arrange(desc(workshops_attended))
+
+```
+
+### 06 Visualizations
+This section presents visual insights from the cleaned attendance data, including workshop popularity, attendance trends over time, and participant engagement patterns.
+
+```{r}
+# Top 10 Workshops by Number of Participants
+attendance_all_years %>%
+  group_by(event) %>%
+  summarise(total_participants = n_distinct(student_id)) %>%
+  arrange(desc(total_participants)) %>%
+  slice_head(n = 20) %>%
+  ggplot(aes(x = reorder(event, total_participants), y = total_participants)) +
+  geom_col(fill = "#0073C2FF", width = 0.7) +
+  geom_text(aes(label = total_participants), hjust = -0.2, size = 3) +
+  coord_flip() +
+  labs(
+    title = "Top 10 Workshops by Number of Participants",
+    x = "Workshop (Event)",
+    y = "Unique Participants"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+```{r}
+# Line chart – participation trend across time
+attendance_all_years %>%
+  group_by(event_date) %>%
+  summarise(total_participants = n_distinct(student_id)) %>%
+  ggplot(aes(x = event_date, y = total_participants)) +
+  geom_line(color = "#2E8B57", size = 1) +
+  geom_point(color = "#2E8B57") +
+  scale_x_date(
+    date_breaks = "1 month",     # show a tick every month
+    date_labels = "%b %Y"        # label as "Jan 2024", "Feb 2024", etc.
+  ) +
+  scale_y_continuous(
+  breaks = seq(0, 100, by = 10),   
+  labels = scales::comma            # adds nice comma formatting
+)
+  labs(
+    title = "Workshop Attendance Over Time",
+    x = "Event Date",
+    y = "Number of Participants"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1)  # rotate labels for clarity
+  )
+
+```
+```{r}
+# Most active participants
+attendance_all_years %>%
+  group_by(student_id) %>%
+  summarise(workshops_attended = n_distinct(event)) %>%
+  arrange(desc(workshops_attended)) %>%
+  slice_head(n = 10) %>%  # top 10 participants
+  ggplot(aes(x = reorder(student_id, workshops_attended), y = workshops_attended)) +
+  geom_col(fill = "#FF8C00", width = 0.7) +
+  geom_text(aes(label = workshops_attended), hjust = -0.2, size = 3) +
+  coord_flip() +
+  labs(
+    title = "Top 10 Participants by Workshops Attended",
+    x = "Participant (student_id)",
+    y = "Workshops Attended"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5))
+
+```
