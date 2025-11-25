@@ -6,20 +6,16 @@ editor: visual
 ---
 
 ### 01. Load Required Libraries
+
 This section loads all necessary R packages used for data cleaning, transformation, and visualization.
 
 ```{r}
-library(tidyverse)
-library(here)
-library(janitor)
-library(digest)
-library(lubridate)
-library(ggplot2)
-library(scales)
+source("00_load_packages.R")
 ```
 
-### 02 Load Merged Datasets
-This section imports the merged attendance and waitlist datasets from the output folder for further cleaning and analysis.
+### 02 Load Raw Attendance Data
+
+This section imports the merged attendance dataset from the output folder for further cleaning and analysis.
 
 ```{r}
 # Define output folder
@@ -27,11 +23,11 @@ output_dir <- here("output")
 
 # Read merged datasets
 attendance_all_years <- read.csv(file.path(output_dir, "attendance_all_years.csv"))
-waitlist_all_years <- read.csv(file.path(output_dir, "waitlist_all_years.csv"))
 ```
 
-### 03. Exploratory Data Analysis
-This section explores the dataset structure,and examines missing values before cleaning.
+### 03. Initial Exploration
+
+This section checks the structure of the attendance dataset and counts missing values.
 
 ```{r}
 glimpse(attendance_all_years)
@@ -40,9 +36,10 @@ sum(is.na(attendance_all_years))
 ```
 
 ### 04. Data Cleaning
-This section performs column renaming, removes duplicates and redundant fields, converts data types, handles missing values, and generates a unique student ID.
 
-#### 4.1 Check for Potential Duplicate Columns
+This section standardises column names, removes redundant fields, handles missing values, and prepares the dataset for analysis.
+
+#### 4.1 Check Potential Duplicate Columns
 
 ```{r}
 # Preview potential duplicate columns across datasets 
@@ -71,15 +68,15 @@ attendance_all_years %>%
     )
 ```
 
-#### 4.3 Drop Redundant Columns
+#### 4.3 Remove Redundant Columns
 
 ```{r}
 # Drop redundant columns
 attendance_all_years <- attendance_all_years %>%
-  select(-First.Name, -Last.Name, -Organisation.Company, -Organisation.company, -School.faculty)
+  select(-First.Name, -Last.Name, -Organisation.Company, -Organisation.company, -School.faculty, -Event)
 ```
 
-#### 4.4 Clean Column Names
+#### 4.4 Standardise Column Names
 
 ```{r}
 # Rename key workshop
@@ -88,7 +85,7 @@ attendance_all_years <- attendance_all_years %>%
 names(attendance_all_years)
 ```
 
-#### 4.5 Check for Duplicate Rows
+#### 4.5 Identify Duplicate Rows
 
 ```{r}
 # Find duplicate rows
@@ -96,7 +93,7 @@ duplicates <- attendance_all_years[duplicated(attendance_all_years), ]
 head(duplicates)
 ```
 
-#### 4.6 Drop Columns with >80% Missing Values
+#### 4.6 Remove Columns with \>80% Missing Values
 
 ```{r}
 # Calculate and sort missing value percentages by column
@@ -108,23 +105,28 @@ attendance_all_years <- attendance_all_years %>%
 nrow(attendance_all_years)
 ```
 
-#### 4.7 Remove Columns with One Unique Value
+#### 4.7 Remove Columns with Only One Unique Value
 
 ```{r}
 # Check unique values
 unique_counts <- sapply(attendance_all_years, \(x) length(unique(x)))
 sort(unique_counts)
 
+unique_counts
 # Remove columns that have only one unique value
 attendance_all_years <- attendance_all_years %>%
   select(where(~ n_distinct(.) > 1))
 ```
 
-#### 4.8 Convert Dates and Datetimes
+### 05. Data Transformation
+
+This section performs deeper standardization, fixing workshop names, harmonising organisation names, inferring missing organisations, creating consistent date formats, and generating hashed student IDs.
+
+#### **5.1 Convert Dates and Datetimes**
 
 ```{r}
-# # Convert event column to appropriate data type
-attendance_all_years$event_date <- as.Date(attendance_all_years$event_date, format = "%d/%m/%Y")
+# Convert event column to appropriate data type
+attendance_all_years$event_date <- lubridate::dmy(attendance_all_years$event_date)
 
 # Convert order_date_time to datetime and separate into order_date and order_time columns
 attendance_all_years <- attendance_all_years %>%
@@ -138,7 +140,229 @@ attendance_all_years <- attendance_all_years %>%
   )
 ```
 
-#### 4.9 Generate Student ID (Hashed)
+#### 5.2 Standardize Workshop Names (General Normalization)
+
+```{r}
+attendance_all_years <- attendance_all_years %>%
+  mutate(
+    workshop = workshop %>% 
+      str_to_lower() %>%      # all lowercase
+      str_squish() %>%        # remove extra spaces
+      str_to_sentence()       # capitalize first letter
+  )
+unique(attendance_all_years$workshop)
+```
+
+#### 5.3 Fix Specific Workshop Name Variants
+
+```{r}
+attendance_all_years <- attendance_all_years %>%
+  mutate(
+    workshop = case_when(
+      
+      # --- REDCap 100 series ---
+      workshop == "Redcap 101 - getting started with redcap" ~ "Getting started with redcap",
+      workshop == "Redcap 102 - building projects in redcap" ~ "Building projects in redcap",
+      
+      # --- REDCap 200 series ---
+      workshop == "Redcap 201 - advanced project management" ~ "Redcap advanced project management",
+      workshop == "Redcap 202 - finalising and running a clinical trial" ~ "Redcap finalising and running a clinical trial",
+
+      # --- Python workshop correction ---
+      workshop == "Introduction to programming: plotting and programming in python" ~
+        "Introduction to programming: plotting and programming with python",
+     
+       workshop == "Introduction to python - nci" ~
+        "Introduction to programming: plotting and programming with python",
+      # --- NGS workshop correction ---
+      workshop == "Introduction to ngs and bioinformatics analysis" ~
+        "An introduction to ngs and bioinformatics analysis",
+      
+      # --- Unix shell workshop correction ---
+      workshop == "Introduction to the unix shell" ~
+        "Introduction to the unix shell - nci",
+      
+      # --- RNA-seq workshop correction ---
+      workshop == "Rna-seq analysis using galaxy" ~
+        "Single-cell rna-seq analysis using galaxy",
+
+      # Keep all other names unchanged
+      TRUE ~ workshop
+    )
+  )
+```
+
+```{r}
+unique(attendance_all_years$workshop)
+```
+
+#### **5.4 Standardise Organisation Names**
+
+```{r}
+# Convert CQUniversity to Central Queensland University
+unique(attendance_all_years$organisation)
+attendance_all_years <- attendance_all_years %>%
+  mutate(
+    organisation = case_when(
+      organisation == "CQUniversity" ~ "Central Queensland University",
+      TRUE ~ organisation
+    )
+  )
+```
+
+#### **5.5 Infer Missing Organisations from Email Domain**
+
+```{r}
+# Pattern-based inference
+attendance_all_years <- attendance_all_years %>%
+  mutate(
+    email_domain = tolower(sub(".*@", "", email))
+  )
+unique(attendance_all_years$email_domain)
+
+attendance_all_years <- attendance_all_years %>%
+  mutate(
+    organisation_inferred = case_when(
+      
+      # ---- University of Queensland ----
+      str_detect(email_domain, "uq") ~ "University of Queensland",
+      
+      # ---- Central Queensland University ----
+      str_detect(email_domain, "cqu") ~ "Central Queensland University",
+      
+      # ---- Griffith University ----
+      str_detect(email_domain, "griffith") | 
+      str_detect(email_domain, "grififth") | 
+      str_detect(email_domain, "griffth") | 
+      str_detect(email_domain, "griffithuni") ~ "Griffith University",
+      
+      # ---- Southern Cross University ----
+      str_detect(email_domain, "scu") ~ "Southern Cross University",
+      
+      # ---- University of the Sunshine Coast ----
+      str_detect(email_domain, "usc") ~ "University of the Sunshine Coast",
+      
+      # ---- QUT ----
+      str_detect(email_domain, "qut") ~ "Queensland University of Technology",
+      
+      # ---- UniSQ (University of Southern Queensland) ----
+      str_detect(email_domain, "usq") | 
+      str_detect(email_domain, "unisq") ~ "University of Southern Queensland",
+      
+      # ---- JCU ----
+      str_detect(email_domain, "jcu") ~ "James Cook University",
+      
+      # ---- Bond ----
+      str_detect(email_domain, "bond") ~ "Bond University",
+      
+      # ---- UNSW ----
+      str_detect(email_domain, "unsw") ~ "University of New South Wales",
+      
+      # ---- University of Sydney ----
+      str_detect(email_domain, "sydney") ~ "University of Sydney",
+      
+      # ---- ANU ----
+      str_detect(email_domain, "anu") ~ "Australian National University",
+      
+      # ---- Monash ----
+      str_detect(email_domain, "monash") ~ "Monash University",
+      
+      # ---- UTAS ----
+      str_detect(email_domain, "utas") ~ "University of Tasmania",
+      
+      # ---- Deakin ----
+      str_detect(email_domain, "deakin") ~ "Deakin University",
+      
+      # ---- UniMelb ----
+      str_detect(email_domain, "unimelb") ~ "University of Melbourne",
+      
+      # ---- UWA ----
+      str_detect(email_domain, "uwa") ~ "University of Western Australia",
+      
+      # ---- UniSA ----
+      str_detect(email_domain, "unisa") ~ "University of South Australia",
+      
+      # ---- CDU ----
+      str_detect(email_domain, "cdu") ~ "Charles Darwin University",
+      
+      # ---- Curtin ----
+      str_detect(email_domain, "curtin") ~ "Curtin University",
+      
+      # ---- Newcastle ----
+      str_detect(email_domain, "newcastle") ~ "University of Newcastle",
+      
+      # ---- UOW ----
+      str_detect(email_domain, "uow") ~ "University of Wollongong",
+      
+      # ---- La Trobe ----
+      str_detect(email_domain, "ltu") ~ "La Trobe University",
+      str_detect(email_domain, "latrobe") ~ "La Trobe University",
+      
+      # ---- RMIT ----
+      str_detect(email_domain, "rmit") ~ "RMIT University",
+      
+      # ---- UniCanberra ----
+      str_detect(email_domain, "canberra") ~ "University of Canberra",
+      
+      # ---- Federation ----
+      str_detect(email_domain, "federation") ~ "Federation University",
+      
+      # ---- Massey (NZ) ----
+      str_detect(email_domain, "mq.edu.au") ~ "Macquarie University",
+      
+      # ---- Overseas Universities ----
+      str_detect(email_domain, "edu") ~ "International University",
+      
+      # ---- Everything else ----
+      TRUE ~ "Non-University / Unknown"
+    )
+  )
+
+```
+
+```{r}
+# Apply inference only to missing entries:
+attendance_all_years <- attendance_all_years %>%
+  mutate(
+    organisation = if_else(
+      is.na(organisation) | organisation == "",
+      organisation_inferred,
+      organisation
+    )
+  )
+
+attendance_all_years <- attendance_all_years %>%
+  select(-organisation_inferred)
+
+```
+
+#### **5.6 Standardize Month Values**
+
+```{r}
+unique(attendance_all_years$month)
+sum(is.na(attendance_all_years$month))
+# View rows where month is missing
+attendance_all_years %>%
+  filter(is.na(month)) %>%
+  select(workshop, event_date)
+```
+
+```{r}
+# Extract month directly from event_date
+attendance_all_years <- attendance_all_years %>%
+  mutate(
+    # Get month from event_date
+    event_month = lubridate::month(event_date, label = TRUE, abbr = TRUE),
+
+    # Replace NA in month with event_month
+    month = dplyr::coalesce(month, as.character(event_month))
+  ) %>%
+  select(-event_month)  # Remove the temporary helper column
+
+unique(attendance_all_years$month)
+```
+
+#### **5.7 Generate Hashed Student ID**
 
 ```{r}
 # Standardize and Generate Student ID
@@ -152,6 +376,8 @@ attendance_all_years <- attendance_all_years %>%
   ), algo = "sha256")) %>%
   ungroup()
 ```
+
+#### **5.8 Remove Duplicate Participant–Workshop Records**
 
 ```{r}
 # Check if any email is linked to more than one student ID
@@ -176,121 +402,147 @@ attendance_all_years %>%
 
 ```
 
-#### 4.10 Identify and Remove Duplicate Participant–Event Records (same email registered multiple times for same workshop)
-
 ```{r}
-# Identify Duplicate Registrations (Same Email + Event)
+# Identify Duplicate Registrations (Same patricipant + Event)
 attendance_all_years %>%
-  count(student_id, event) %>%
+  count(student_id, workshop) %>%
   filter(n > 1)
 
 attendance_all_years %>%
-  filter(duplicated(select(., student_id, event)) | duplicated(select(., student_id, event), fromLast = TRUE))
+  filter(duplicated(select(., student_id, workshop)) | duplicated(select(., student_id, workshop), fromLast = TRUE))
 
 # remove duplicate participant-event records
 attendance_all_years <- attendance_all_years %>%
-  distinct(student_id, event, .keep_all = TRUE)
+  distinct(student_id, workshop, .keep_all = TRUE)
 ```
 
-### 05 Summaries
-This section provides a summary of workshop participation, including total records, number of unique participants, participants by workshop and date, and the number of workshops attended per person.
+#### **5.9 Classify Member vs Non-Member**
 
 ```{r}
-# Total records
-attendance_all_years %>% summarise(total_rows = n())
-
-# Total number of unique participants
-attendance_all_years %>%
-  summarise(unique_participants = n_distinct(student_id))
-
-# Total participants by workshop/event
-attendance_all_years %>%
-  group_by(event) %>%
-  summarise(total_participants = n_distinct(student_id)) %>%
-  arrange(desc(total_participants))
-
-# Total participants by workshop and date
-attendance_all_years %>%
-  group_by(event, event_date) %>%
-  summarise(total_participants = n_distinct(student_id)) %>%
-  arrange(event, event_date)
-
-# Number of workshops attended per person
-attendance_all_years %>%
-  group_by(student_id) %>%
-  summarise(workshops_attended = n_distinct(event)) %>%
-  arrange(desc(workshops_attended))
-
+attendance_all_years <- attendance_all_years %>%
+  mutate(
+    member_status = case_when(
+      str_detect(ticket_type, regex("QCIF\\s*Member", ignore_case = TRUE)) ~ "member",
+      str_detect(ticket_type, regex("QCIF\\s*Members", ignore_case = TRUE)) ~ "member",
+      str_detect(ticket_type, regex("QCIF\\s*Associate", ignore_case = TRUE)) ~ "member",
+      TRUE ~ "non_member"
+    )
+  )
 ```
 
-### 06 Visualizations
-This section presents visual insights from the cleaned attendance data, including workshop popularity, attendance trends over time, and participant engagement patterns.
+### 06 Save Cleaned Dataset
 
 ```{r}
-# Top 10 Workshops by Number of Participants
-attendance_all_years %>%
-  group_by(event) %>%
-  summarise(total_participants = n_distinct(student_id)) %>%
-  arrange(desc(total_participants)) %>%
-  slice_head(n = 20) %>%
-  ggplot(aes(x = reorder(event, total_participants), y = total_participants)) +
-  geom_col(fill = "#0073C2FF", width = 0.7) +
-  geom_text(aes(label = total_participants), hjust = -0.2, size = 3) +
-  coord_flip() +
-  labs(
-    title = "Top 10 Workshops by Number of Participants",
-    x = "Workshop (Event)",
-    y = "Unique Participants"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(plot.title = element_text(hjust = 0.5))
-
+write.csv(attendance_all_years,
+         file.path(output_dir, "attendance_all_years_cleaned.csv"),
+         row.names = FALSE)
+saveRDS(attendance_all_years,
+        file.path(output_dir, "attendance_cleaned.rds"))
 ```
+
+### 07. Merge with Workshop Prices
+
 ```{r}
-# Line chart – participation trend across time
-attendance_all_years %>%
-  group_by(event_date) %>%
-  summarise(total_participants = n_distinct(student_id)) %>%
-  ggplot(aes(x = event_date, y = total_participants)) +
-  geom_line(color = "#2E8B57", size = 1) +
-  geom_point(color = "#2E8B57") +
-  scale_x_date(
-    date_breaks = "1 month",     # show a tick every month
-    date_labels = "%b %Y"        # label as "Jan 2024", "Feb 2024", etc.
-  ) +
-  scale_y_continuous(
-  breaks = seq(0, 100, by = 10),   
-  labels = scales::comma            # adds nice comma formatting
-)
-  labs(
-    title = "Workshop Attendance Over Time",
-    x = "Event Date",
-    y = "Number of Participants"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(
-    plot.title = element_text(face = "bold", hjust = 0.5),
-    axis.text.x = element_text(angle = 45, hjust = 1)  # rotate labels for clarity
+workshop_price <- read_csv(here("data","2025_workshop_price.csv"))
+attendance_all_years_cleaned <- readRDS(here("output", "attendance_cleaned.rds"))
+```
+
+```{r}
+# Standardise workshop names in price file
+workshop_price <- workshop_price %>%
+  mutate(
+    workshop = workshop %>% 
+      str_to_lower() %>%      # all lowercase
+      str_squish() %>%        # remove extra spaces
+      str_to_sentence()       # capitalize first letter
+  )
+
+att_ws <- unique(attendance_all_years_cleaned$workshop)
+price_ws <- unique(workshop_price$workshop)
+# Workshops in attendance but NOT in price file
+setdiff(att_ws, price_ws)
+```
+
+```{r}
+# Workshops in price file but NOT in attendance
+setdiff(price_ws, att_ws)
+workshop_price %>% filter(is.na(workshop))
+```
+
+```{r}
+workshop_price <- workshop_price %>%
+  filter(
+    !workshop %in% c(
+      "Redcap workshop series",
+      "Large language models for research"
+    )
+  )
+```
+
+```{r}
+# merge
+attendance_merged <- attendance_all_years_cleaned %>%
+  left_join(workshop_price, by = "workshop")
+```
+
+### 08. Apply Member Pricing Rule
+
+```{r}
+attendance_merged <- attendance_merged %>%
+  mutate(
+    price = if_else(member_status == "member", 0, price)
   )
 
 ```
-```{r}
-# Most active participants
-attendance_all_years %>%
-  group_by(student_id) %>%
-  summarise(workshops_attended = n_distinct(event)) %>%
-  arrange(desc(workshops_attended)) %>%
-  slice_head(n = 10) %>%  # top 10 participants
-  ggplot(aes(x = reorder(student_id, workshops_attended), y = workshops_attended)) +
-  geom_col(fill = "#FF8C00", width = 0.7) +
-  geom_text(aes(label = workshops_attended), hjust = -0.2, size = 3) +
-  coord_flip() +
-  labs(
-    title = "Top 10 Participants by Workshops Attended",
-    x = "Participant (student_id)",
-    y = "Workshops Attended"
-  ) +
-  theme_minimal(base_size = 12) +
-  theme(plot.title = element_text(face = "bold", hjust = 0.5))
 
+#### 09. Categorize Workshops into QCIF Training Themes
+
+```{r}
+attendance_merged$category <- case_when(
+  
+  # Programming
+  grepl("programming|python|r shiny|visualisation|dashboards|reproducible|containers", 
+        attendance_merged$workshop, ignore.case = TRUE) ~ "Programming & Data Skills",
+  
+  # Statistics
+  grepl("spss|statistical|regression|mixed model|predicting|categorical outcomes", 
+        attendance_merged$workshop, ignore.case = TRUE) ~ "Statistics & Data Analysis",
+  
+  # Clinical / REDCap
+  grepl("redcap|clinical trial", 
+        attendance_merged$workshop, ignore.case = TRUE) ~ "Clinical / REDCap",
+  
+  # Bioinformatics
+  grepl("bioinformatics|ngs|rna|galaxy|genome|annotation", 
+        attendance_merged$workshop, ignore.case = TRUE) ~ "Bioinformatics",
+  
+  # HPC / Git / Unix / ML
+  grepl("unix|git|HPC|NCI|machine learning|classification|image classification|clustering|ensemble", 
+        attendance_merged$workshop, ignore.case = TRUE) ~ "HPC / Git / Unix / ML",
+  
+  TRUE ~ "Other"
+)
+```
+
+### 9.1 Remove “ - NCI” branding
+
+```{r}
+attendance_merged <- attendance_merged %>%
+  mutate(
+    workshop = workshop %>%
+      str_replace(regex("[-–]?\\s*NCI", ignore_case = TRUE), "") %>%
+      str_trim()
+  )
+
+
+unique(attendance_merged$workshop)
+
+```
+
+### 10. Save Final Transformed Dataset
+
+```{r}
+glimpse(attendance_merged)
+saveRDS(attendance_merged, 
+        file.path(output_dir, "attendance_with_prices.rds"))
 ```

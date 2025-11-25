@@ -1,0 +1,650 @@
+---
+title: "03_data_analysis"
+author: "Galey Wangmo"
+format: html
+editor: visual
+---
+
+### 01. Load Required Libraries
+
+This section loads all required R packages used for the analysis.
+
+```{r}
+source("00_load_packages.R")
+```
+
+### 02. Load Cleaned Dataset
+
+This section imports the cleaned attendance dataset (including workshop prices, categories, and membership info) for analysis.
+
+```{r}
+# Define output folder
+output_dir <- here("output")
+
+# Read dataset
+attendance_with_prices <- readRDS(here("output", "attendance_with_prices.rds"))
+
+glimpse(attendance_with_prices)
+```
+
+### 03. Overall Participation Overview
+
+This section provides a high-level summary of the dataset and the overall participation across all QCIF workshops.
+
+#### 3.1 Dataset Summary (Table)
+
+```{r}
+# Total rows and columns
+dataset_summary <- tibble::tibble(
+total_rows = nrow(attendance_with_prices),
+total_columns = ncol(attendance_with_prices),
+unique_participants = n_distinct(attendance_with_prices$student_id),
+unique_workshops = n_distinct(attendance_with_prices$workshop),
+unique_organisations = n_distinct(attendance_with_prices$organisation),
+date_min = min(attendance_with_prices$event_date, na.rm = TRUE),
+date_max = max(attendance_with_prices$event_date, na.rm = TRUE)
+)
+
+dataset_summary
+```
+
+#### 3.2 Daily Unique Participants Over Time (Visual)
+
+```{r}
+attendance_with_prices %>%
+arrange(event_date) %>%
+group_by(event_date) %>%
+summarise(unique_participants = n_distinct(student_id), .groups = "drop") %>%
+ggplot(aes(x = event_date, y = unique_participants)) +
+geom_line(color = "#0073C2FF", linewidth = 1) +
+geom_point(color = "#0073C2FF", size = 1.8) +
+scale_x_date(
+date_breaks = "1 month",
+date_labels = "%b %Y"
+) +
+labs(
+title = "Attendance Trends Over Time",
+x = "Event Date",
+y = "Unique Participants"
+) +
+theme_minimal(base_size = 12) +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1),
+plot.title = element_text(hjust = 0.5, face = "bold")
+)
+```
+
+**Interpretation**\
+
+This chart shows how many unique participants attended each workshop date from Feb 2024 to Oct 2025. Attendance is quite volatile at the individual-event level, with most workshops attracting small–medium groups but a few events spiking to much higher numbers. From early 2025 onwards there is a visible lift in the upper range of attendance, suggesting demand has grown or that topics/marketing have improved. The pattern also shows clusters of events rather than an even spread across the calendar.
+
+**Recommendations**
+
+-   Use the high-attendance events as internal benchmarks: review their topics, timing, marketing channels and delivery mode to understand what drove demand.
+
+-   Smooth the calendar by avoiding long “quiet” periods and bunching too many events into the same week.
+
+-   Use these daily patterns later as features for predictive model (e.g., proximity to prior events, day of week, time of year).
+
+### 04. Workshop Demand
+
+This section examines which workshops attracted the highest number of unique participants.
+
+#### 4.1 Top 20 Workshops by Unique Participants (Table)
+
+```{r}
+top20_workshops <- attendance_with_prices %>%
+group_by(workshop) %>%
+summarise(total_participants = n_distinct(student_id), .groups = "drop") %>%
+arrange(desc(total_participants)) %>%
+slice_head(n = 20)
+
+top20_workshops
+```
+
+```{r}
+top20_workshops %>%
+ggplot(aes(x = reorder(workshop, total_participants), y = total_participants)) +
+geom_col(fill = "#0073C2FF", width = 0.7) +
+geom_text(aes(label = total_participants), hjust = -0.2, size = 3) +
+coord_flip() +
+labs(
+title = "Top 20 Workshops by Number of Unique Participants",
+x = "Workshop",
+y = "Unique Participants"
+) +
+theme_minimal(base_size = 12) +
+theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+**Interpretation**\
+
+This bar chart highlights the workshops that attracted the most unique participants. Introductory programming and statistics courses clearly dominate, with “Introduction to programming: R for reproducible scientific analysis” and “Introduction to programming: plotting and programming with Python” at the top. Core analytic skills (SPSS, regression, data visualisation, Unix shell, longitudinal and mixed models) make up most of the remaining high-demand workshops. More specialized topics (e.g. bioinformatics, image classification, Redcap project management) still draw solid but smaller cohorts.
+
+**Recommendations**
+
+-   Continue to prioritise introductory programming and statistics workshops in the schedule; they are the “workhorses” for reach and impact.
+
+-   Use the top workshops as anchor points in the calendar and wrap more specialized topics around them as follow-on or “Level 2” offerings.
+
+-   Consider waitlist data and room capacity for the highest-demand workshops to avoid turning away participants.
+
+### 05. Participant Engagement
+
+This section explores how often participants return and how many workshops they attend.
+
+#### 5.1 Distribution of Workshops Attended per Participant (Table)
+
+```{r}
+workshops_per_participant <- attendance_with_prices %>%
+count(student_id) %>%
+count(workshops_attended = n, name = "n_participants") %>%
+arrange(workshops_attended)
+
+workshops_per_participant
+```
+
+#### 5.2 Repeat Attendee Pyramid (Visual)
+
+```{r}
+workshops_per_participant %>%
+ggplot(aes(x = workshops_attended, y = n_participants)) +
+geom_col(fill = "#0073C2FF", width = 0.7) +
+geom_text(aes(label = n_participants), vjust = -0.3, size = 2) +
+theme_minimal(base_size = 12) +
+labs(
+title = "Distribution of Workshops Attended per Participant",
+x = "Number of Workshops Attended",
+y = "Number of Participants"
+) +
+theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+**Interpretation**\
+
+This chart shows how many workshops each participant attended. The largest group (around 1,300 people) attended exactly one workshop, and the counts drop steadily as the number of workshops increases. A much smaller group attended 5+ workshops, and a tiny core attended 10 or more. This pattern is typical of a “long tail”: many one-off attendees and a smaller base of highly engaged regulars.
+
+**Recommendations**
+
+-   Treat one-time attendees as a key growth opportunity: send targeted follow-up communications with “next best workshop” suggestions to convert them into repeat participants.
+
+-   Recognize and nurture the high-engagement segment (e.g., 5+ workshops) with tailored communications, early invites, or “advanced streams” to keep them engaged.
+
+-   In modelling, create features capturing prior attendance count to predict likelihood of future attendance
+
+#### 5.3 Top 10 Most Active Participants (Table)
+
+```{r}
+top10_participants <- attendance_with_prices %>%
+group_by(student_id) %>%
+summarise(workshops_attended = n_distinct(workshop), .groups = "drop") %>%
+arrange(desc(workshops_attended)) %>%
+slice_head(n = 10)
+
+top10_participants
+```
+
+#### 5.4 Top 10 Most Active Participants (Visual)
+
+```{r}
+top10_participants %>%
+ggplot(aes(x = reorder(student_id, workshops_attended), y = workshops_attended)) +
+geom_col(fill = "#0073C2FF", width = 0.7) +
+geom_text(aes(label = workshops_attended), hjust = -0.2, size = 3) +
+coord_flip() +
+labs(
+title = "Top 10 Participants by Workshops Attended",
+x = "Participant (student_id)",
+y = "Workshops Attended"
+) +
+theme_minimal(base_size = 12) +
+theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+**Interpretation**\
+
+This chart identifies the 10 most active participants (by hashed student_id), with the top attendee participating in 22 workshops and several others attending 12–17. These individuals are clear power-users of QCIF training and likely represent key champions within their institutions or research groups. Their behaviour contrasts strongly with the majority who attend only once or twice.
+
+**Recommendations**
+
+-   Consider reaching out to these highly engaged participants (through institutions rather than directly, to maintain privacy) for qualitative feedback on what works well and what could be improved.
+
+    Explore opportunities to involve them as internal advocates, e.g., lab champions, co-facilitators, or reviewers of new workshop ideas.
+
+-   Use their paths (the sequence of workshops they attend) to design recommended learning pathways for other participants.
+
+### 06. Institutional Reach
+
+This section shows how QCIF training is distributed across organisations.
+
+#### 6.1 Unique Participants by Organisation (Table)
+
+```{r}
+org_summary <- attendance_with_prices %>%
+filter(!is.na(organisation) & organisation != "") %>%
+group_by(organisation) %>%
+summarise(unique_participants = n_distinct(student_id), .groups = "drop") %>%
+arrange(desc(unique_participants))
+
+org_summary
+```
+
+```{r}
+org_summary %>%
+  ggplot(aes(x = reorder(organisation, unique_participants),
+             y = unique_participants)) +
+  geom_col(fill = "#4C72B0") +
+  geom_text(aes(label = unique_participants),
+            hjust = -0.1, size = 3) +
+  coord_flip() +
+  labs(
+    title = "Unique Participants by Institution",
+    x = "Institution / Organisation",
+    y = "Number of Unique Participants"
+  ) +
+  theme_minimal(base_size = 12)
+
+```
+
+**Interpretation**\
+
+This bar chart shows how many unique participants came from each institution. The University of Queensland, QUT and Griffith University collectively account for a large share of attendees, followed by James Cook University, UniSC and CQU. There is still meaningful but smaller engagement from a wide range of Australian universities, international universities and non-university organisations. The pattern suggests a strong core membership base with growing national and international reach.
+
+**Recommendations**
+
+-   Deepen partnerships and tailored offerings for the top contributing institutions; they clearly value QCIF training.
+
+-   For institutions with smaller numbers, consider targeted outreach or joint campaigns with local champions to raise visibility.
+
+-   At national level, use these figures in reporting to demonstrate QCIF’s reach across NCRIS and beyond.
+
+#### 6.2 Organisation × Workshop Heatmap (Visual)
+
+```{r}
+table_org_workshop <- attendance_with_prices %>%
+  filter(!is.na(organisation) & organisation != "") %>%
+  group_by(organisation, workshop) %>%
+  summarise(unique_participants = n_distinct(student_id), .groups = "drop") %>%
+  arrange(desc(unique_participants))
+
+table_org_workshop
+
+```
+
+```{r}
+attendance_with_prices %>%
+filter(!is.na(organisation) & organisation != "") %>%
+group_by(organisation, workshop) %>%
+summarise(unique_participants = n_distinct(student_id), .groups = "drop") %>%
+ggplot(aes(x = workshop, y = organisation, fill = unique_participants)) +
+geom_tile(color = "white") +
+scale_fill_gradient(low = "white", high = "#3b4cc0") +
+coord_flip() +
+theme_minimal(base_size = 9) +
+theme(
+axis.text.x = element_text(angle = 45, hjust = 1, size = 7),
+axis.text.y = element_text(size = 7),
+panel.grid = element_blank()
+) +
+labs(
+title = "Unique Participants by Organisation and Workshop",
+x = "Workshop",
+y = "Organisation",
+fill = "Participants"
+)
+
+attendance_with_prices %>%
+  filter(!is.na(organisation), organisation != "") %>%
+  group_by(organisation, category) %>%
+  summarise(
+    n = n_distinct(student_id),
+    .groups = "drop"
+  ) %>%
+  ggplot(aes(
+    x = category,
+    y = reorder(organisation, n),
+    fill = n
+  )) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(
+    low = "white",
+    high = "#3b4cc0",
+    name = "Participants"
+  ) +
+  labs(
+    title = "Workshop Category Spectrum by Organisation",
+    x = "Workshop Category",
+    y = "Organisation"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    panel.grid = element_blank()
+  )
+```
+
+**Interpretation**\
+
+This heatmap shows which institutions attend which specific workshops. Darker tiles highlight strong engagement between certain universities and particular topics, such as heavy participation from major members in programming, statistics and Unix/Git, and more specialised attendance patterns for bioinformatics and REDCap. It reveals both broad-appeal workshops (dark tiles across many institutions) and niche offerings that are strongly associated with a handful of partners.
+
+**Recommendations**
+
+-   Maintain broad-appeal workshops as the backbone of the program, ensuring they remain accessible across institutions.
+
+-   For niche workshops with strong uptake at a few institutions, consider tailored versions, co-branded events, or on-site intensives for those partners.
+
+-   Use the heatmap to identify gaps, for example, institutions that rarely engage with high-value topics, and design targeted outreach or awareness campaigns.
+
+### 07. Member vs Non-Member Attendance
+
+This section compares participation between QCIF members and non-members.
+
+#### 7.1 Member vs Non-Member Counts (Table)
+
+```{r}
+member_summary <- attendance_with_prices %>%
+count(member_status, name = "n_participants")
+
+member_summary
+```
+
+#### 7.2 Member vs Non-Member Attendance (Visual)
+
+```{r}
+attendance_with_prices %>%
+count(member_status) %>%
+ggplot(aes(x = member_status, y = n, fill = member_status)) +
+geom_col(width = 0.7) +
+geom_text(aes(label = n), vjust = -0.5, size = 3) +
+theme_minimal(base_size = 12) +
+labs(
+title = "Member vs Non-Member Attendance",
+x = "Group",
+y = "Number of Registrations"
+) +
+theme(
+legend.position = "none",
+plot.title = element_text(hjust = 0.5, face = "bold")
+)
+```
+
+**Interpretation**\
+
+This bar chart compares registrations from QCIF member institutions versus non-members. Members account for roughly three times as many registrations as non-members, confirming that QCIF’s training program is primarily serving its member base while still reaching a meaningful external audience. This mix is important when interpreting both impact and revenue, given that member tickets are typically free or discounted.
+
+**Recommendations**
+
+-   Continue to prioritize value for members, as they form the bulk of the training demand.
+
+-   For non-members, highlight the strong participation numbers as evidence to support potential new memberships or partnership discussions.
+
+-   Use different messaging for member and non-member audiences (e.g., benefits of membership vs. pay-per-workshop access).
+
+### 08. Revenue by Year and Workshop
+
+This section focuses on revenue patterns, after setting QCIF member prices to zero.
+
+#### 8.1 Revenue by Year (Table)
+
+```{r}
+revenue_by_year <- attendance_with_prices %>%
+group_by(year) %>%
+summarise(
+total_revenue = sum(price, na.rm = TRUE),
+n_payments = sum(price > 0, na.rm = TRUE),
+.groups = "drop"
+)
+
+revenue_by_year
+```
+
+#### 8.2 Revenue by Year (Visual)
+
+```{r}
+revenue_by_year %>%
+ggplot(aes(x = factor(year), y = total_revenue, fill = factor(year))) +
+geom_col(width = 0.6) +
+geom_text(aes(label = scales::comma(total_revenue)), vjust = -0.5, size = 3) +
+labs(
+title = "Total Revenue Comparison: 2024 vs 2025",
+x = "Year",
+y = "Total Revenue (AUD)"
+) +
+theme_minimal(base_size = 12) +
+theme(
+legend.position = "none",
+plot.title = element_text(hjust = 0.5, face = "bold")
+)
+```
+
+**Interpretation**\
+
+This chart compares total revenue from 2024 and 2025 attendance. Revenue in 2025 is almost three times higher than in 2024, reflecting either higher volumes of paying participants, more paid events, or changes in pricing. This growth indicates that QCIF workshops are not only expanding in reach but also generating significantly more financial value, despite a high proportion of member-free tickets.
+
+**Recommendations**
+
+-   Investigate the drivers of the revenue jump (e.g., more non-member participation, popular high-priced workshops, or changes to pricing structure) and explicitly plan to sustain these drivers.
+
+-   Consider whether additional high-demand workshops can be offered to non-members or as premium options without compromising member access.
+
+-   Use the revenue trend as part of strategic reporting to funders and governance bodies.
+
+8.3 Revenue by Workshop (Top 15, Table)
+
+```{r}
+revenue_by_workshop <- attendance_with_prices %>%
+group_by(workshop) %>%
+summarise(total_revenue = sum(price, na.rm = TRUE), .groups = "drop") %>%
+arrange(desc(total_revenue))
+
+revenue_by_workshop_top15 <- revenue_by_workshop %>%
+filter(total_revenue > 0) %>%
+slice_head(n = 15)
+
+revenue_by_workshop_top15
+```
+
+#### 8.4 Revenue by Workshop and Year (Visual)
+
+```{r}
+revenue_by_year_workshop <- attendance_with_prices %>%
+group_by(year, workshop) %>%
+summarise(total_revenue = sum(price, na.rm = TRUE), .groups = "drop")
+
+df_sorted <- revenue_by_year_workshop %>%
+group_by(workshop) %>%
+summarise(
+total_revenue_all_years = sum(total_revenue, na.rm = TRUE),
+.groups = "drop"
+) %>%
+filter(total_revenue_all_years > 0) %>%
+left_join(revenue_by_year_workshop, by = "workshop")
+
+df_sorted %>%
+ggplot(aes(
+x = reorder(workshop, total_revenue_all_years),
+y = total_revenue,
+fill = factor(year)
+)) +
+geom_col(position = "dodge") +
+geom_text(
+aes(label = scales::comma(total_revenue)),
+position = position_dodge(width = 0.9),
+hjust = -0.1,
+size = 2.8
+) +
+coord_flip() +
+theme_minimal(base_size = 10) +
+labs(
+title = "Revenue by Workshop (Sorted by Total Revenue)",
+x = "Workshop",
+y = "Revenue (AUD)",
+fill = "Year"
+) +
+scale_y_continuous(
+labels = scales::comma,
+expand = expansion(mult = c(0, 0.15))
+) +
+theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+**Interpretation**\
+
+This chart shows revenue per workshop, split by year and sorted by total revenue. A small number of workshops—particularly “Version control with Git”, “Introduction to the Unix shell” and “Introduction to programming: plotting and programming with Python”—generate a disproportionate share of total income, mainly in 2025. Many other workshops generate modest revenue, especially where member attendance dominates or prices are lower. This reveals a classic “revenue concentration” pattern.
+
+**Recommendations**
+
+-   Recognize top-earning workshops as strategic revenue assets: schedule them regularly, ensure they are well-resourced, and monitor demand carefully.
+
+-   For lower-revenue but high-impact workshops (e.g., member-only or foundational training), continue to treat them as core capability-building rather than income-generating products.
+
+-   Explore whether some mid-tier workshops could be packaged or priced to increase revenue without undermining access (e.g., advanced follow-ups, bundled series).
+
+#### 09. Workshop Categories
+
+#### 9.1 Participants by Workshop Category (Table)
+
+```{r}
+participants_by_category <- attendance_with_prices %>%
+  count(category, name = "n_participants") %>%
+  arrange(desc(n_participants))
+
+participants_by_category
+
+```
+
+#### 9.2 Participants by Workshop Category (Visual)
+
+```{r}
+attendance_with_prices %>%
+  count(category, name = "n_participants") %>%
+  ggplot(aes(x = reorder(category, n_participants), 
+             y = n_participants)) +
+  geom_col(fill = "#0073C2FF") +
+  geom_text(aes(label = n_participants), 
+            hjust = -0.2, size = 3) +
+  coord_flip() +
+  labs(
+    title = "Number of Participants by Workshop Category",
+    x = "Workshop Category",
+    y = "Number of Participants"
+  ) +
+  theme_minimal()
+```
+
+**Interpretation**
+
+This chart aggregates attendance by broader workshop category. “Statistics & Data Analysis” and “Programming & Data Skills” together account for the majority of participants, followed by “HPC / Git / Unix / ML”, with Clinical/REDCap and Bioinformatics representing smaller but still important streams. “Other” topics contribute only a small fraction of total attendance. Overall, the data confirms that foundational data and statistical skills remain the main driver of demand.
+
+**Recommendations**
+
+-   Maintain and regularly refresh the Statistics and Programming categories; they are central to QCIF’s value proposition.
+
+-   Position HPC/ML as a growth area by creating clear progression from introductory programming/stats into more advanced computing topics.
+
+-   Ensure Clinical/REDCap and Bioinformatics offerings are aligned with specific partner needs rather than trying to scale them in the same way as core skills.
+
+#### 9.3 Number of Workshops Each Organisation Participated In (Table)
+
+```{r}
+org_workshop_coverage <- attendance_with_prices %>%
+  filter(!is.na(organisation) & organisation != "") %>%
+  group_by(organisation) %>%
+  summarise(
+    n_workshops = n_distinct(workshop),
+    total_participants = n_distinct(student_id)
+  ) %>%
+  arrange(desc(n_workshops))
+
+org_workshop_coverage
+```
+
+#### 9.4 Number of Workshops Each Organisation Participated In (Visual)
+
+```{r}
+#  Organisation Workshop Coverage
+org_workshop_coverage %>%
+  ggplot(aes(
+    x = reorder(organisation, n_workshops),
+    y = n_workshops
+  )) +
+  geom_col(fill = "#4C72B0") +
+  geom_text(
+    aes(label = n_workshops),
+    hjust = -0.1,
+    size = 3
+  ) +
+  coord_flip() +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Workshop Coverage by Organisation",
+    subtitle = "Number of distinct workshops attended",
+    x = "Organisation",
+    y = "Number of Workshops"
+  ) +
+  expand_limits(y = max(org_workshop_coverage$n_workshops) + 2)
+
+```
+
+#### 9.5 Trend of Unique Participants Per Month (2024 and 2025)(Table)
+
+```{r}
+# ---- Create Table: Unique participants per month per year ----
+table_monthly_trend <- attendance_with_prices %>%
+  group_by(year, month) %>%
+  summarise(unique_participants = n_distinct(student_id), .groups = "drop") %>%
+  mutate(
+    month = factor(month, 
+                   levels = c("Jan","Feb","Mar","Apr","May","Jun",
+                              "Jul","Aug","Sep","Oct","Nov","Dec"))
+  ) %>%
+  arrange(year, month)
+
+table_monthly_trend
+
+```
+
+#### 9.6 Trend of Unique Participants Per Month (2024 and 2025) (Visual)
+
+```{r}
+ggplot(table_monthly_trend, 
+       aes(x = month,
+           y = unique_participants, 
+           group = factor(year),
+           color = factor(year))) +
+
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 4) +
+
+  scale_color_manual(values = c("2024" = "#1f78b4", 
+                                "2025" = "#33a02c")) +
+
+  labs(
+    title = "Trend of Unique Participants Per Month (2024 and 2025)",
+    x = "Month",
+    y = "Unique Participants",
+    color = "Year"
+  ) +
+
+  theme_minimal(base_size = 18) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    legend.title = element_text(size = 8),
+    legend.text  = element_text(size = 8),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8)
+  )
+
+```
+
+**Interpretation**
+
+This chart compares monthly attendance between 2024 and 2025. Both years show strongest participation in the first half of the year, but 2025 peaks sharply in August and generally tracks at or above 2024 for most months. The drop in Sept–Oct 2025 suggests either fewer events or a shift in topics that did not attract the same audience. Overall, 2025 is trending higher than 2024, indicating growing reach and brand visibility.
+
+**Recommendations**
+
+-   Treat Aug–Sep as “prime time” for high-impact workshops and flagship series, especially in 2025-like patterns.
+
+-   Investigate the dip months (late 2025) to see if it is a scheduling issue or a topic mix issue, and adjust the future calendar accordingly.
+
+-   For the predictive model, include year and month effects to capture seasonal peaks.
