@@ -7,3 +7,8 @@ data/
 *.csv
 *.xlsx
 *.rds
+*.html
+*.md
+# Ignore knitted output
+*_files/
+Figure-html/

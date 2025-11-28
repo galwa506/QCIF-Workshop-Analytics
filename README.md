@@ -1,69 +1,93 @@
-## QCIF Workshop Analytics – Data Pipeline & Insights
+![R version](https://img.shields.io/badge/R-%3E%3D4.3-lightgrey)
+![Status](https://img.shields.io/badge/Project-Active-lightgrey)
+![Last Commit](https://img.shields.io/github/last-commit/galwa506/QCIF-Workshop-Analytics?color=lightgrey)
 
-This repository contains a reproducible R-based data pipeline for cleaning, standardising, and integrating multi-year Humanitix workshop attendance data. It focuses on resolving inconsistencies across raw files and producing clean, analysis-ready datasets for further internal use.
+## QCIF Workshop Analytics (2024–2025)
 
+A data-cleaning and analytics pipeline for QCIF workshop datasets (2024–2025), built to automate ingestion, cleaning, integration, and preparation for reporting and future modelling.
+
+### Key Features
+
+- Automated ingestion of multiple workshop files across 2024–2025
+- Standardised cleaning of inconsistent fields
+- Normalisation of workshop names, organisations, and date formats
+- Hashed IDs for participant privacy using SHA-256
+- Integration of workshop pricing and member/non-member logic
+- Summary-ready dataset for internal QCIF reporting
+
+Fully script-based, reproducible workflow
 ### Project Structure
 ```
-QCIF-Workshop-Analytics/
+QQCIF-Workshop-Analytics/
+├── R/
+│   ├── 00_load_packages.R         # Loads required packages
+│   ├── 01_merged_dataset.R        # Automatically detects, loads, and merges raw data
+│   ├── 02_data_cleaning.qmd       # Cleaning and standardisation workflow
+│   ├── 03_data_analysis.qmd       # Summary tables and exploratory analysis (no outputs saved)
 │
-├── data/ # Raw Humanitix exports (attendance, waitlist, pricing)
-├── output/ # Cleaned and merged datasets (CSV / RDS)
-├── R/ # Scripts used in the pipeline
-│ ├── 00_load_packages.R
-│ ├── 01_data_merge.R
-│ ├── 02_data_cleaning.R
-│ └── 03_data_analysis.R
+├── data/
+│   ├── raw/                       # Raw attendance/waitlist datasets (ignored)
+│   ├── cleaned/                   # Cleaned and integrated datasets
+│
+├── output/
+│   ├── reports/                   # Optional knitted reports (ignored)
+│
+├── .gitignore                     # Excludes HTML, PNG, knit folders, raw data
+├── renv.lock                      # Ensures reproducible R environment
+├── QCIF-Workshop-Analytics.Rproj  # RStudio project file
 └── README.md
 ```
+Note: All raw datasets, images, and knitted outputs are intentionally excluded to protect QCIF internal data.
 
-### Requirements / Tools
 
-This project uses:
+### Getting Started
 
-- R (version 4+)
-- tidyverse for data cleaning and wrangling
-- janitor for column standardisation
-- lubridate for date handling
-- here for path management
-- digest for hashed IDs
-- readr / readxl for file ingestion
+#### 1. Install dependencies
+source("R/00_load_packages.R")
 
-### Outputs
+#### 2. Merge datasets
+source("R/01_merged_dataset.R")
+This step automatically scans the raw folders and merges all attendance and waitlist files across years.
 
-Cleaned datasets are stored in the output/ folder:
+#### 3. Clean the data
+quarto::render("R/02_data_cleaning.qmd", execute = TRUE)
 
-- attendance_all_years_cleaned.csv
-- attendance_cleaned.rds
-- attendance_with_prices.rds
+#### 4. Run analysis (summary only)
+quarto::render("R/03_data_analysis.qmd", execute = TRUE)
 
-### How to Run
+### Privacy & Data Notes
+- QCIF workshop data contains private institutional information.
+- Raw files, knitted reports, and generated visuals are excluded from this repository using .gitignore.
+- Only scripts and reproducible workflows are included.
+- This project should not be used with external datasets without QCIF approval.
 
-Place raw Humanitix files into the data/ folder
+### Dependencies
+- R (≥ 4.3)
+- tidyverse
+- janitor
+- here
+- anytime
+- lubridate
+- digest
+- ggplot2
+- openxlsx
+- quarto
 
-Run the scripts in order:
-- 00_load_packages.R
-- 01_data_merge.R
-- 02_data_cleaning.R
-- 03_data_analysis.R
-Outputs will generate automatically into output/
+### Environment Setup with renv
 
-### Project Goals
+This project uses renv for reproducible package management. All package versions used in this workflow are locked in renv.lock.
 
-- Clean and consolidate multi-year Humanitix workshop data
-- Standardise workshop names, organisations, and categories
-- Build a repeatable and scalable data pipeline
-- Generate insights on participation, institutions, demand, revenue and trends
-- Prepare the dataset for predictive attendance modelling
+#### 1. Install renv
+install.packages("renv")
 
-### Project Purpose
+#### 2. Restore the environment
+renv::restore()
 
-- Consolidate all 2024–2025 Humanitix workshop files
-- Create a consistent structure across raw datasets
-- Standardise workshop names, organisations, and categories
-- Merge attendance, waitlist, pricing, and metadata into a unified dataset
-- Produce a modelling-ready foundation for attendance forecasting
+This installs all packages recorded in the lockfile.
+
+#### 3. Activate the environment
+QCIF-Workshop-Analytics.Rproj
 
 ### Author
-
-- Galey Wangmo
-- Master of Data Science - James Cook University
+Galey Wangmo
+Data Science Intern - QCIF
