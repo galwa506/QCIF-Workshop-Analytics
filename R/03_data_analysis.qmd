@@ -46,6 +46,18 @@ date_max = max(attendance_with_prices$event_date, na.rm = TRUE)
 )
 
 dataset_summary
+
+cat(
+  "The cleaned dataset contains", dataset_summary$total_rows, "rows and",
+  dataset_summary$total_columns, "columns.\nIt includes",
+  dataset_summary$unique_participants, "unique participants attending",
+  dataset_summary$unique_workshops, "different workshops from",
+  dataset_summary$unique_organisations, "organisations.\nThe events span from",
+  format(dataset_summary$date_min, "%d %b %Y"), "to",
+  format(dataset_summary$date_max, "%d %b %Y")
+)
+
+
 ```
 
 #### 3.2 Daily Unique Participants Over Time (Visual)
@@ -56,8 +68,8 @@ arrange(event_date) %>%
 group_by(event_date) %>%
 summarise(unique_participants = n_distinct(student_id), .groups = "drop") %>%
 ggplot(aes(x = event_date, y = unique_participants)) +
-geom_line(color = "#0073C2FF", linewidth = 1) +
-geom_point(color = "#0073C2FF", size = 1.8) +
+geom_line(color = "#03254E", linewidth = 1) +
+geom_point(color = "#03254E", size = 1.8) +
 scale_x_date(
 date_breaks = "1 month",
 date_labels = "%b %Y"
@@ -97,7 +109,8 @@ top20_workshops <- attendance_with_prices %>%
 group_by(workshop) %>%
 summarise(total_participants = n_distinct(student_id), .groups = "drop") %>%
 arrange(desc(total_participants)) %>%
-slice_head(n = 20)
+slice_head(n = 20) %>%
+  mutate(percent = total_participants / sum(total_participants) * 100)
 
 top20_workshops
 ```
@@ -105,15 +118,16 @@ top20_workshops
 ```{r}
 top20_workshops %>%
 ggplot(aes(x = reorder(workshop, total_participants), y = total_participants)) +
-geom_col(fill = "#0073C2FF", width = 0.7) +
-geom_text(aes(label = total_participants), hjust = -0.2, size = 3) +
+geom_col(fill = "#03254E", width = 0.7) +
+geom_text(aes(label = paste0(round(percent, 1), "%")),
+            hjust = -0.2, size = 1.6) +
 coord_flip() +
 labs(
-title = "Top 20 Workshops by Number of Unique Participants",
+title = "Top 20 Workshops\nby Number of Unique Participants",
 x = "Workshop",
 y = "Unique Participants"
 ) +
-theme_minimal(base_size = 12) +
+theme_minimal(base_size = 7) +
 theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
@@ -139,7 +153,8 @@ This section explores how often participants return and how many workshops they 
 workshops_per_participant <- attendance_with_prices %>%
 count(student_id) %>%
 count(workshops_attended = n, name = "n_participants") %>%
-arrange(workshops_attended)
+arrange(workshops_attended) %>%
+  mutate(percent = n_participants / sum(n_participants) * 100)
 
 workshops_per_participant
 ```
@@ -149,8 +164,9 @@ workshops_per_participant
 ```{r}
 workshops_per_participant %>%
 ggplot(aes(x = workshops_attended, y = n_participants)) +
-geom_col(fill = "#0073C2FF", width = 0.7) +
-geom_text(aes(label = n_participants), vjust = -0.3, size = 2) +
+geom_col(fill = "#03254E", width = 0.7) +
+geom_text(aes(label = paste0(round(percent, 1), "%")),
+            vjust = -0.3, size = 2) +
 theme_minimal(base_size = 12) +
 labs(
 title = "Distribution of Workshops Attended per Participant",
@@ -189,7 +205,7 @@ top10_participants
 ```{r}
 top10_participants %>%
 ggplot(aes(x = reorder(student_id, workshops_attended), y = workshops_attended)) +
-geom_col(fill = "#0073C2FF", width = 0.7) +
+geom_col(fill = "#03254E", width = 0.7) +
 geom_text(aes(label = workshops_attended), hjust = -0.2, size = 3) +
 coord_flip() +
 labs(
@@ -197,7 +213,7 @@ title = "Top 10 Participants by Workshops Attended",
 x = "Participant (student_id)",
 y = "Workshops Attended"
 ) +
-theme_minimal(base_size = 12) +
+theme_minimal(base_size = 8) +
 theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
@@ -224,7 +240,8 @@ org_summary <- attendance_with_prices %>%
 filter(!is.na(organisation) & organisation != "") %>%
 group_by(organisation) %>%
 summarise(unique_participants = n_distinct(student_id), .groups = "drop") %>%
-arrange(desc(unique_participants))
+arrange(desc(unique_participants)) %>%
+  mutate(percent = unique_participants /sum(unique_participants) * 100)
 
 org_summary
 ```
@@ -233,8 +250,8 @@ org_summary
 org_summary %>%
   ggplot(aes(x = reorder(organisation, unique_participants),
              y = unique_participants)) +
-  geom_col(fill = "#4C72B0") +
-  geom_text(aes(label = unique_participants),
+  geom_col(fill = "#03254E") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
             hjust = -0.1, size = 3) +
   coord_flip() +
   labs(
@@ -242,7 +259,7 @@ org_summary %>%
     x = "Institution / Organisation",
     y = "Number of Unique Participants"
   ) +
-  theme_minimal(base_size = 12)
+  theme_minimal(base_size = 10)
 
 ```
 
@@ -312,7 +329,7 @@ attendance_with_prices %>%
     name = "Participants"
   ) +
   labs(
-    title = "Workshop Category Spectrum by Organisation",
+    title = "Workshop Category by Organisation",
     x = "Workshop Category",
     y = "Organisation"
   ) +
@@ -343,7 +360,8 @@ This section compares participation between QCIF members and non-members.
 
 ```{r}
 member_summary <- attendance_with_prices %>%
-count(member_status, name = "n_participants")
+count(member_status, name = "n_participants") %>%
+  mutate(percent = n_participants / sum(n_participants) * 100)
 
 member_summary
 ```
@@ -351,21 +369,28 @@ member_summary
 #### 7.2 Member vs Non-Member Attendance (Visual)
 
 ```{r}
-attendance_with_prices %>%
-count(member_status) %>%
-ggplot(aes(x = member_status, y = n, fill = member_status)) +
-geom_col(width = 0.7) +
-geom_text(aes(label = n), vjust = -0.5, size = 3) +
-theme_minimal(base_size = 12) +
-labs(
-title = "Member vs Non-Member Attendance",
-x = "Group",
-y = "Number of Registrations"
-) +
-theme(
-legend.position = "none",
-plot.title = element_text(hjust = 0.5, face = "bold")
-)
+member_summary %>%
+  ggplot(aes(x = member_status, 
+             y = n_participants, 
+             fill = member_status)) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            vjust = -0.5, size = 3) +
+  scale_fill_manual(values = c(
+    "member" = "#03254E",
+    "non_member" = "#008080"
+  )) +
+  theme_minimal(base_size = 12) +
+  labs(
+    title = "Member vs Non-Member Attendance",
+    x = "Group",
+    y = "Number of Registrations"
+  ) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
+
 ```
 
 **Interpretation**\
@@ -388,12 +413,13 @@ This section focuses on revenue patterns, after setting QCIF member prices to ze
 
 ```{r}
 revenue_by_year <- attendance_with_prices %>%
-group_by(year) %>%
-summarise(
-total_revenue = sum(price, na.rm = TRUE),
-n_payments = sum(price > 0, na.rm = TRUE),
-.groups = "drop"
-)
+  group_by(year) %>%
+  summarise(
+    total_revenue = sum(price, na.rm = TRUE),
+    n_payments = sum(price > 0, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(percent_revenue = total_revenue / sum(total_revenue) * 100)
 
 revenue_by_year
 ```
@@ -402,19 +428,26 @@ revenue_by_year
 
 ```{r}
 revenue_by_year %>%
-ggplot(aes(x = factor(year), y = total_revenue, fill = factor(year))) +
-geom_col(width = 0.6) +
-geom_text(aes(label = scales::comma(total_revenue)), vjust = -0.5, size = 3) +
-labs(
-title = "Total Revenue Comparison: 2024 vs 2025",
-x = "Year",
-y = "Total Revenue (AUD)"
-) +
-theme_minimal(base_size = 12) +
-theme(
-legend.position = "none",
-plot.title = element_text(hjust = 0.5, face = "bold")
-)
+  ggplot(aes(x = factor(year), 
+             y = total_revenue, 
+             fill = factor(year))) +
+  geom_col(width = 0.7) +
+  geom_text(aes(label = paste0(round(percent_revenue, 1), "%")),
+            vjust = -0.5, size = 3) +
+  scale_fill_manual(values = c(
+    "2024" = "#008080",   # teal
+    "2025" = "#03254E"    # soft teal
+  )) +
+  labs(
+    title = "Revenue by Year",
+    x = "Year",
+    y = "Total Revenue (AUD)"
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  )
 ```
 
 **Interpretation**\
@@ -461,31 +494,37 @@ filter(total_revenue_all_years > 0) %>%
 left_join(revenue_by_year_workshop, by = "workshop")
 
 df_sorted %>%
-ggplot(aes(
-x = reorder(workshop, total_revenue_all_years),
-y = total_revenue,
-fill = factor(year)
-)) +
-geom_col(position = "dodge") +
-geom_text(
-aes(label = scales::comma(total_revenue)),
-position = position_dodge(width = 0.9),
-hjust = -0.1,
-size = 2.8
-) +
-coord_flip() +
-theme_minimal(base_size = 10) +
-labs(
-title = "Revenue by Workshop (Sorted by Total Revenue)",
-x = "Workshop",
-y = "Revenue (AUD)",
-fill = "Year"
-) +
-scale_y_continuous(
-labels = scales::comma,
-expand = expansion(mult = c(0, 0.15))
-) +
-theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  ggplot(aes(
+    x = reorder(workshop, total_revenue_all_years),
+    y = total_revenue,
+    fill = factor(year)
+  )) +
+  geom_col(position = "dodge") +
+  geom_text(
+    aes(label = scales::comma(total_revenue)),
+    position = position_dodge(width = 0.9),
+    hjust = -0.1,
+    size = 2.8
+  ) +
+  coord_flip() +
+  theme_minimal(base_size = 10) +
+  labs(
+    title = "Revenue by Workshop (Sorted by Total Revenue)",
+    x = "Workshop",
+    y = "Revenue (AUD)",
+    fill = "Year"
+  ) +
+  scale_y_continuous(
+    labels = scales::comma,
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  
+  scale_fill_manual(values = c(
+    `2024` = "#0097A7",  
+    `2025` = "#03254E"   
+  )) +
+  
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
 **Interpretation**\
@@ -507,25 +546,24 @@ This chart shows revenue per workshop, split by year and sorted by total revenue
 ```{r}
 participants_by_category <- attendance_with_prices %>%
   count(category, name = "n_participants") %>%
+  mutate(percent = n_participants / sum(n_participants) * 100) %>%
   arrange(desc(n_participants))
 
 participants_by_category
-
 ```
 
 #### 9.2 Participants by Workshop Category (Visual)
 
 ```{r}
-attendance_with_prices %>%
-  count(category, name = "n_participants") %>%
-  ggplot(aes(x = reorder(category, n_participants), 
+participants_by_category %>%
+  ggplot(aes(x = reorder(category, n_participants),
              y = n_participants)) +
-  geom_col(fill = "#0073C2FF") +
-  geom_text(aes(label = n_participants), 
-            hjust = -0.2, size = 3) +
+  geom_col(fill = "#03254E") +
+  geom_text(aes(label = paste0(round(percent, 1), "%")),
+            hjust = -0.2, size = 1.8) +
   coord_flip() +
   labs(
-    title = "Number of Participants by Workshop Category",
+    title = "Percentage of Participants by Workshop Category",
     x = "Workshop Category",
     y = "Number of Participants"
   ) +
@@ -568,7 +606,7 @@ org_workshop_coverage %>%
     x = reorder(organisation, n_workshops),
     y = n_workshops
   )) +
-  geom_col(fill = "#4C72B0") +
+  geom_col(fill = "#03254E") +
   geom_text(
     aes(label = n_workshops),
     hjust = -0.1,
@@ -589,7 +627,6 @@ org_workshop_coverage %>%
 #### 9.5 Trend of Unique Participants Per Month (2024 and 2025)(Table)
 
 ```{r}
-# ---- Create Table: Unique participants per month per year ----
 table_monthly_trend <- attendance_with_prices %>%
   group_by(year, month) %>%
   summarise(unique_participants = n_distinct(student_id), .groups = "drop") %>%

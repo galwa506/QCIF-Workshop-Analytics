@@ -109,7 +109,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="load-required-libraries">01. Load Required Libraries</h3>
 <p>This section loads all necessary R packages used for data cleaning, transformation, and visualization.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"00_load_packages.R"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
 ✔ dplyr     1.1.4     ✔ readr     2.1.5
@@ -120,56 +120,52 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ✖ dplyr::filter() masks stats::filter()
 ✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /Users/galeywangmo/Documents/Intern/QCIF-Workshop-Analytics</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janitor)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+here() starts at /Users/galeywangmo/Documents/Intern/QCIF-Workshop-Analytics
+
+
 Attaching package: 'janitor'
+
 
 The following objects are masked from 'package:stats':
 
-    chisq.test, fisher.test</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(digest)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(scales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>
+    chisq.test, fisher.test
+
+
+
 Attaching package: 'scales'
+
 
 The following object is masked from 'package:purrr':
 
     discard
 
+
 The following object is masked from 'package:readr':
 
-    col_factor</code></pre>
+    col_factor
+
+
+Packages loaded.</code></pre>
 </div>
 </div>
 </section>
-<section id="load-merged-datasets" class="level3">
-<h3 class="anchored" data-anchor-id="load-merged-datasets">02 Load Merged Datasets</h3>
-<p>This section imports the merged attendance and waitlist datasets from the output folder for further cleaning and analysis.</p>
+<section id="load-raw-attendance-data" class="level3">
+<h3 class="anchored" data-anchor-id="load-raw-attendance-data">02 Load Raw Attendance Data</h3>
+<p>This section imports the merged attendance dataset from the output folder for further cleaning and analysis.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define output folder</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>output_dir <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"output"</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Read merged datasets</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">file.path</span>(output_dir, <span class="st">"attendance_all_years_1.csv"</span>))</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>waitlist_all_years <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">file.path</span>(output_dir, <span class="st">"waitlist_all_years_1.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define output folder</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>output_dir <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"output"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Read merged datasets</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">file.path</span>(output_dir, <span class="st">"attendance_all_years.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="exploratory-data-analysis" class="level3">
-<h3 class="anchored" data-anchor-id="exploratory-data-analysis">03. Exploratory Data Analysis</h3>
-<p>This section explores the dataset structure,and examines missing values before cleaning.</p>
+<section id="initial-exploration" class="level3">
+<h3 class="anchored" data-anchor-id="initial-exploration">03. Initial Exploration</h3>
+<p>This section checks the structure of the attendance dataset and counts missing values.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(attendance_all_years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(attendance_all_years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 5,251
 Columns: 62
@@ -236,7 +232,7 @@ $ School.faculty                                                                
 $ Organisation.company                                                                                                                                          &lt;lgl&gt; …
 $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.workshop.                                                                       &lt;chr&gt; …</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(attendance_all_years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(attendance_all_years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>'data.frame':   5251 obs. of  62 variables:
  $ Event                                                                                                                                                        : chr  "Introduction to Programming: R for Reproducible Scientific Analysis (Feb 2024)" "Introduction to Programming: R for Reproducible Scientific Analysis (Feb 2024)" "Introduction to Programming: R for Reproducible Scientific Analysis (Feb 2024)" "Introduction to Programming: R for Reproducible Scientific Analysis (Feb 2024)" ...
@@ -288,7 +284,7 @@ $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.
  $ QR.code.data                                                                                                                                                 : chr  "{\"eventId\":\"65812412e991ee36da043b4b\",\"_id\":\"65bb128ef7d958d10fe5cd33\"}" "{\"eventId\":\"65812412e991ee36da043b4b\",\"_id\":\"65bb0e5aeb92e0527ae4f813\"}" "{\"eventId\":\"65812412e991ee36da043b4b\",\"_id\":\"65ba2ac3d4ba953d2384a864\"}" "{\"eventId\":\"65812412e991ee36da043b4b\",\"_id\":\"65b9d18391ca4712311c07c3\"}" ...
  $ Sales.Channel                                                                                                                                                : chr  "Online" "Online" "Online" "Online" ...
  $ workshop                                                                                                                                                     : chr  "Introduction to Programming: R for Reproducible Scientific Analysis" "Introduction to Programming: R for Reproducible Scientific Analysis" "Introduction to Programming: R for Reproducible Scientific Analysis" "Introduction to Programming: R for Reproducible Scientific Analysis" ...
- $ month                                                                                                                                                        : chr  "Feb 2024" "Feb 2024" "Feb 2024" "Feb 2024" ...
+ $ month                                                                                                                                                        : chr  "Feb" "Feb" "Feb" "Feb" ...
  $ Do.you.have.experience.in.R.and.RStudio..or.will.you.be.getting.training.prior.to.this.workshop...Do.not.register.unless.you.can.answer.Yes.to.this.question.: chr  NA NA NA NA ...
  $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.workshop...Do.not.register.unless.you.can.answer.Yes.to.this.question.         : chr  NA NA NA NA ...
  $ Do.you.have.experience.in.Unix.Linux..or.will.you.be.getting.training.prior.to.this.workshop...Do.not.register.unless.you.can.answer.Yes.to.this.question.   : chr  NA NA NA NA ...
@@ -302,20 +298,46 @@ $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.
  $ Organisation.company                                                                                                                                         : logi  NA NA NA NA NA NA ...
  $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.workshop.                                                                      : chr  NA NA NA NA ...</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(attendance_all_years))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(attendance_all_years))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 99375</code></pre>
+<pre><code>[1] 99376</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total rows and columns</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>dataset_summary <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="at">total_rows =</span> <span class="fu">nrow</span>(attendance_all_years),</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="at">total_columns =</span> <span class="fu">ncol</span>(attendance_all_years),</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="at">unique_workshops =</span> <span class="fu">n_distinct</span>(attendance_all_years<span class="sc">$</span>workshop),</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="at">unique_organisations =</span> <span class="fu">n_distinct</span>(attendance_all_years<span class="sc">$</span>organisation),</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>dataset_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+  total_rows total_columns unique_workshops unique_organisations
+       &lt;int&gt;         &lt;int&gt;            &lt;int&gt;                &lt;int&gt;
+1       5251            62               46                    0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"The dataset contains"</span>, dataset_summary<span class="sc">$</span>total_rows, <span class="st">"rows and"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  dataset_summary<span class="sc">$</span>total_columns, <span class="st">"columns.</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  dataset_summary<span class="sc">$</span>unique_workshops, <span class="st">"unique workshops, and</span><span class="sc">\n</span><span class="st">"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  dataset_summary<span class="sc">$</span>unique_organisations, <span class="st">"unique organisations represented.</span><span class="sc">\n</span><span class="st">"</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>The dataset contains 5251 rows and 62 columns.
+ 46 unique workshops, and
+ 0 unique organisations represented.</code></pre>
 </div>
 </div>
 </section>
 <section id="data-cleaning" class="level3">
 <h3 class="anchored" data-anchor-id="data-cleaning">04. Data Cleaning</h3>
-<p>This section performs column renaming, removes duplicates and redundant fields, converts data types, handles missing values, and generates a unique student ID.</p>
-<section id="check-for-potential-duplicate-columns" class="level4">
-<h4 class="anchored" data-anchor-id="check-for-potential-duplicate-columns">4.1 Check for Potential Duplicate Columns</h4>
+<p>This section standardizes column names, removes redundant fields, handles missing values, and prepares the dataset for analysis.</p>
+<section id="check-potential-duplicate-columns" class="level4">
+<h4 class="anchored" data-anchor-id="check-potential-duplicate-columns">4.1 Check Potential Duplicate Columns</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview potential duplicate columns across datasets </span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span> <span class="fu">select</span>(First.name, First.Name) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview potential duplicate columns across datasets </span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span> <span class="fu">select</span>(First.name, First.Name) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>           First.name         First.Name
 1      Alexandra Anne     Alexandra Anne
@@ -329,7 +351,7 @@ $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.
 9               Lijun              Lijun
 10            Katelyn            Katelyn</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span> <span class="fu">select</span>(Last.name, Last.Name) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span> <span class="fu">select</span>(Last.name, Last.Name) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     Last.name   Last.Name
 1     Williams    Williams
@@ -343,7 +365,7 @@ $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.
 9  Summerhayes Summerhayes
 10     Collins     Collins</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span> <span class="fu">select</span>(Organisation, Organisation.Company, Organisation.company) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span> <span class="fu">select</span>(Organisation, Organisation.Company, Organisation.company) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                          Organisation Organisation.Company
 1        Central Queensland University                 &lt;NA&gt;
@@ -368,7 +390,7 @@ $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.
 9                    NA
 10                   NA</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span> <span class="fu">select</span>(School.or.faculty, School.faculty) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span> <span class="fu">select</span>(School.or.faculty, School.faculty) <span class="sc">%&gt;%</span> <span class="fu">head</span>(<span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                           School.or.faculty School.faculty
 1                                                      CMERC           &lt;NA&gt;
@@ -387,20 +409,20 @@ $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.
 <section id="compare-missing-values-in-duplicate-columns" class="level4">
 <h4 class="anchored" data-anchor-id="compare-missing-values-in-duplicate-columns">4.2 Compare Missing Values in Duplicate Columns</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sumarize the number of missing (NA) values in potentially duplicated columns </span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># to identify which versions contain usable data before merging or dropping</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">First.name_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(First.name)),</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">First.Name_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(First.Name)),</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Last.name_NA  =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Last.name)),</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Last.Name_NA  =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Last.Name)),</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Organisation_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Organisation)),</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Organisation.Company_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Organisation.Company)),</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">Organisation.company_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Organisation.company)),</span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">School.or.faculty_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(School.or.faculty)),</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">School.faculty_NA=</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(School.faculty))</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Sumarize the number of missing (NA) values in potentially duplicated columns </span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># to identify which versions contain usable data before merging or dropping</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">First.name_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(First.name)),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">First.Name_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(First.Name)),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Last.name_NA  =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Last.name)),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Last.Name_NA  =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Last.Name)),</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">Organisation_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Organisation)),</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Organisation.Company_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Organisation.Company)),</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">Organisation.company_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(Organisation.company)),</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">School.or.faculty_NA =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(School.or.faculty)),</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">School.faculty_NA=</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(School.faculty))</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  First.name_NA First.Name_NA Last.name_NA Last.Name_NA Organisation_NA
 1             0             0            0            0            1255
@@ -411,21 +433,21 @@ $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.
 </div>
 </div>
 </section>
-<section id="drop-redundant-columns" class="level4">
-<h4 class="anchored" data-anchor-id="drop-redundant-columns">4.3 Drop Redundant Columns</h4>
+<section id="remove-redundant-columns" class="level4">
+<h4 class="anchored" data-anchor-id="remove-redundant-columns">4.3 Remove Redundant Columns</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop redundant columns</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>First.Name, <span class="sc">-</span>Last.Name, <span class="sc">-</span>Organisation.Company, <span class="sc">-</span>Organisation.company, <span class="sc">-</span>School.faculty, <span class="sc">-</span>Event)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop redundant columns</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>First.Name, <span class="sc">-</span>Last.Name, <span class="sc">-</span>Organisation.Company, <span class="sc">-</span>Organisation.company, <span class="sc">-</span>School.faculty, <span class="sc">-</span>Event)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="clean-column-names" class="level4">
-<h4 class="anchored" data-anchor-id="clean-column-names">4.4 Clean Column Names</h4>
+<section id="standardise-column-names" class="level4">
+<h4 class="anchored" data-anchor-id="standardise-column-names">4.4 Standardise Column Names</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename key workshop</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(attendance_all_years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename key workshop</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(attendance_all_years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "first_name"                                                                                                                                                
  [2] "last_name"                                                                                                                                                 
@@ -486,12 +508,12 @@ $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.
 </div>
 </div>
 </section>
-<section id="check-for-duplicate-rows" class="level4">
-<h4 class="anchored" data-anchor-id="check-for-duplicate-rows">4.5 Check for Duplicate Rows</h4>
+<section id="identify-duplicate-rows" class="level4">
+<h4 class="anchored" data-anchor-id="identify-duplicate-rows">4.5 Identify Duplicate Rows</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find duplicate rows</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>duplicates <span class="ot">&lt;-</span> attendance_all_years[<span class="fu">duplicated</span>(attendance_all_years), ]</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(duplicates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find duplicate rows</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>duplicates <span class="ot">&lt;-</span> attendance_all_years[<span class="fu">duplicated</span>(attendance_all_years), ]</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(duplicates)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] first_name                                                                                                                                                
  [2] last_name                                                                                                                                                 
@@ -553,12 +575,12 @@ $ Do.you.have.experience.in.SPSS..or.will.you.be.getting.training.prior.to.this.
 </div>
 </div>
 </section>
-<section id="drop-columns-with-80-missing-values" class="level4">
-<h4 class="anchored" data-anchor-id="drop-columns-with-80-missing-values">4.6 Drop Columns with &gt;80% Missing Values</h4>
+<section id="remove-columns-with-80-missing-values" class="level4">
+<h4 class="anchored" data-anchor-id="remove-columns-with-80-missing-values">4.6 Remove Columns with &gt;80% Missing Values</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate and sort missing value percentages by column</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>na_percent <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(<span class="fu">is.na</span>(attendance_all_years)) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(na_percent, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate and sort missing value percentages by column</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>na_percent <span class="ot">&lt;-</span> <span class="fu">colMeans</span>(<span class="fu">is.na</span>(attendance_all_years)) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(na_percent, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                                                                                                                                          seating_location 
                                                                                                                                               100.00000000 
@@ -601,6 +623,8 @@ do_you_have_experience_in_r_and_r_studio_or_will_you_be_getting_training_prior_t
                                                                                                                   how_did_you_find_out_about_this_workshop 
                                                                                                                                                11.44543896 
                                                                                                                                                     mobile 
+                                                                                                                                                0.01904399 
+                                                                                                                                                     month 
                                                                                                                                                 0.01904399 
                                                                                                                                                 first_name 
                                                                                                                                                 0.00000000 
@@ -668,26 +692,24 @@ do_you_have_experience_in_r_and_r_studio_or_will_you_be_getting_training_prior_t
                                                                                                                                                 0.00000000 
                                                                                                                                                   workshop 
                                                                                                                                                 0.00000000 
-                                                                                                                                                     month 
-                                                                                                                                                0.00000000 
                                                                                                                                                       year 
                                                                                                                                                 0.00000000 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop columns with more than 80% missing values</span></span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">which</span>(na_percent<span class="sc">&gt;</span><span class="dv">80</span>))</span>
-<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(attendance_all_years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop columns with more than 80% missing values</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">which</span>(na_percent<span class="sc">&gt;</span><span class="dv">80</span>))</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(attendance_all_years)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 5251</code></pre>
 </div>
 </div>
 </section>
-<section id="remove-columns-with-one-unique-value" class="level4">
-<h4 class="anchored" data-anchor-id="remove-columns-with-one-unique-value">4.7 Remove Columns with One Unique Value</h4>
+<section id="remove-columns-with-only-one-unique-value" class="level4">
+<h4 class="anchored" data-anchor-id="remove-columns-with-only-one-unique-value">4.7 Remove Columns with Only One Unique Value</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check unique values</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>unique_counts <span class="ot">&lt;-</span> <span class="fu">sapply</span>(attendance_all_years, \(x) <span class="fu">length</span>(<span class="fu">unique</span>(x)))</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(unique_counts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check unique values</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>unique_counts <span class="ot">&lt;-</span> <span class="fu">sapply</span>(attendance_all_years, \(x) <span class="fu">length</span>(<span class="fu">unique</span>(x)))</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sort</span>(unique_counts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                humanitix_passed_on_fees 
                                        1 
@@ -733,14 +755,14 @@ do_you_have_experience_in_r_and_r_studio_or_will_you_be_getting_training_prior_t
                                       11 
                             organisation 
                                       12 
+                                   month 
+                                      12 
                                     paid 
                                       14 
 how_did_you_find_out_about_this_workshop 
                                       16 
                              ticket_type 
                                       20 
-                                   month 
-                                      23 
                                 workshop 
                                       46 
                               event_date 
@@ -770,7 +792,7 @@ how_did_you_find_out_about_this_workshop
                             qr_code_data 
                                     5251 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>unique_counts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>unique_counts</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                              first_name 
                                     1773 
@@ -849,50 +871,174 @@ how_did_you_find_out_about_this_workshop
                                 workshop 
                                       46 
                                    month 
-                                      23 
+                                      12 
                                     year 
                                        2 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove columns that have only one unique value</span></span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">n_distinct</span>(.) <span class="sc">&gt;</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove columns that have only one unique value</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">where</span>(<span class="sc">~</span> <span class="fu">n_distinct</span>(.) <span class="sc">&gt;</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
+</section>
+<section id="data-transformation" class="level3">
+<h3 class="anchored" data-anchor-id="data-transformation">05. Data Transformation</h3>
+<p>This section performs deeper standardization, fixing workshop names, harmonising organisation names, inferring missing organisations, creating consistent date formats, and generating hashed student IDs.</p>
 <section id="convert-dates-and-datetimes" class="level4">
-<h4 class="anchored" data-anchor-id="convert-dates-and-datetimes">4.8 Convert Dates and Datetimes</h4>
+<h4 class="anchored" data-anchor-id="convert-dates-and-datetimes"><strong>5.1 Convert Dates and Datetimes</strong></h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># # Convert event column to appropriate data type</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years<span class="sc">$</span>event_date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(attendance_all_years<span class="sc">$</span>event_date, <span class="at">format =</span> <span class="st">"%d/%m/%Y"</span>)</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert order_date_time to datetime and separate into order_date and order_time columns</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert order_date_time from text to proper datetime (POSIXct)</span></span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">order_date_time =</span> <span class="fu">as.POSIXct</span>(order_date_time, <span class="at">format =</span> <span class="st">"%Y-%m-%d %I:%M %p"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create separate date and time columns</span></span>
-<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">order_date =</span> <span class="fu">as.Date</span>(order_date_time),                <span class="co"># extract date only</span></span>
-<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">order_time =</span> <span class="fu">format</span>(order_date_time, <span class="st">"%H:%M:%S"</span>)      <span class="co"># extract time as string (24-hour)</span></span>
-<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert event column to appropriate data type</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years<span class="sc">$</span>event_date <span class="ot">&lt;-</span> lubridate<span class="sc">::</span><span class="fu">dmy</span>(attendance_all_years<span class="sc">$</span>event_date)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert order_date_time to datetime and separate into order_date and order_time columns</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert order_date_time from text to proper datetime (POSIXct)</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">order_date_time =</span> <span class="fu">as.POSIXct</span>(order_date_time, <span class="at">format =</span> <span class="st">"%Y-%m-%d %I:%M %p"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create separate date and time columns</span></span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">order_date =</span> <span class="fu">as.Date</span>(order_date_time),                <span class="co"># extract date only</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">order_time =</span> <span class="fu">format</span>(order_date_time, <span class="st">"%H:%M:%S"</span>)      <span class="co"># extract time as string (24-hour)</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="standarize-workshop-names" class="level4">
-<h4 class="anchored" data-anchor-id="standarize-workshop-names">4.8 Standarize Workshop Names</h4>
+<section id="standardize-workshop-names-general-normalization" class="level4">
+<h4 class="anchored" data-anchor-id="standardize-workshop-names-general-normalization">5.2 Standardize Workshop Names (General Normalization)</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">workshop =</span> workshop <span class="sc">%&gt;%</span> </span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_to_lower</span>() <span class="sc">%&gt;%</span>      <span class="co"># all lowercase</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_squish</span>() <span class="sc">%&gt;%</span>        <span class="co"># remove extra spaces</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_to_sentence</span>()       <span class="co"># capitalize first letter</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(attendance_all_years<span class="sc">$</span>workshop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Introduction to programming: r for reproducible scientific analysis"
+ [2] "Introduction to spss"                                               
+ [3] "Introduction to the unix shell"                                     
+ [4] "Statistical comparisons using r"                                    
+ [5] "R shiny essentials: from data to interactive dashboards"            
+ [6] "Introduction to programming: plotting and programming in python"    
+ [7] "Statistical comparisons using spss"                                 
+ [8] "Exploring and predicting using linear regression in r"              
+ [9] "Redcap 101 - getting started with redcap"                           
+[10] "Redcap 102 - building projects in redcap"                           
+[11] "Statistical comparisons for hass researchers"                       
+[12] "An introduction to ngs and bioinformatics analysis"                 
+[13] "Redcap 201 - advanced project management"                           
+[14] "Longitudinal and mixed model analysis using r"                      
+[15] "Redcap 202 - finalising and running a clinical trial"               
+[16] "Working with sensitive data"                                        
+[17] "Exploring and predicting using linear regression in spss"           
+[18] "Data visualisation for research communication"                      
+[19] "Rna-seq analysis using galaxy"                                      
+[20] "Single-cell rna-seq analysis using r"                               
+[21] "Analysing categorical outcomes and logistic regression with r"      
+[22] "Containers for reproducible computational environments"             
+[23] "Long-read assembly using galaxy"                                    
+[24] "Single-cell rna-seq analysis using galaxy"                          
+[25] "Genome annotation with apollo"                                      
+[26] "Introduction to the unix shell - nci"                               
+[27] "Introduction to python - nci"                                       
+[28] "Version control with git - nci"                                     
+[29] "Introduction to high performance computing - nci"                   
+[30] "Introduction to image classification - nci"                         
+[31] "Fundamentals of regression in machine learning - nci"               
+[32] "Introduction to ngs and bioinformatics analysis"                    
+[33] "Fundamentals of classification in machine learning - nci"           
+[34] "Decision trees and ensemble methods in machine learning - nci"      
+[35] "Getting started with redcap"                                        
+[36] "Clustering and unsupervised methods in machine learning - nci"      
+[37] "Building projects in redcap"                                        
+[38] "Redcap advanced project management"                                 
+[39] "Redcap finalising and running a clinical trial"                     
+[40] "Introduction to programming: plotting and programming with python"  
+[41] "R for reproducible scientific analysis"                             </code></pre>
+</div>
+</div>
+</section>
+<section id="fix-specific-workshop-name-variants" class="level4">
+<h4 class="anchored" data-anchor-id="fix-specific-workshop-name-variants">5.3 Fix Specific Workshop Name Variants</h4>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">workshop =</span> workshop <span class="sc">%&gt;%</span> </span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_to_lower</span>() <span class="sc">%&gt;%</span>      <span class="co"># all lowercase</span></span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_squish</span>() <span class="sc">%&gt;%</span>        <span class="co"># remove extra spaces</span></span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_to_sentence</span>()       <span class="co"># capitalize first letter</span></span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">workshop =</span> <span class="fu">case_when</span>(</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>      <span class="co"># --- REDCap 100 series ---</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>      workshop <span class="sc">==</span> <span class="st">"Redcap 101 - getting started with redcap"</span> <span class="sc">~</span> <span class="st">"Getting started with redcap"</span>,</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>      workshop <span class="sc">==</span> <span class="st">"Redcap 102 - building projects in redcap"</span> <span class="sc">~</span> <span class="st">"Building projects in redcap"</span>,</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>      <span class="co"># --- REDCap 200 series ---</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>      workshop <span class="sc">==</span> <span class="st">"Redcap 201 - advanced project management"</span> <span class="sc">~</span> <span class="st">"Redcap advanced project management"</span>,</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>      workshop <span class="sc">==</span> <span class="st">"Redcap 202 - finalising and running a clinical trial"</span> <span class="sc">~</span> <span class="st">"Redcap finalising and running a clinical trial"</span>,</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>      <span class="co"># --- Python workshop correction ---</span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>      workshop <span class="sc">==</span> <span class="st">"Introduction to programming: plotting and programming in python"</span> <span class="sc">~</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Introduction to programming: plotting and programming with python"</span>,</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>     </span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>       workshop <span class="sc">==</span> <span class="st">"Introduction to python - nci"</span> <span class="sc">~</span></span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Introduction to programming: plotting and programming with python"</span>,</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>      <span class="co"># --- NGS workshop correction ---</span></span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>      workshop <span class="sc">==</span> <span class="st">"Introduction to ngs and bioinformatics analysis"</span> <span class="sc">~</span></span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"An introduction to ngs and bioinformatics analysis"</span>,</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>      <span class="co"># --- Unix shell workshop correction ---</span></span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true" tabindex="-1"></a>      workshop <span class="sc">==</span> <span class="st">"Introduction to the unix shell"</span> <span class="sc">~</span></span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Introduction to the unix shell - nci"</span>,</span>
+<span id="cb41-26"><a href="#cb41-26" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb41-27"><a href="#cb41-27" aria-hidden="true" tabindex="-1"></a>      <span class="co"># --- RNA-seq workshop correction ---</span></span>
+<span id="cb41-28"><a href="#cb41-28" aria-hidden="true" tabindex="-1"></a>      workshop <span class="sc">==</span> <span class="st">"Rna-seq analysis using galaxy"</span> <span class="sc">~</span></span>
+<span id="cb41-29"><a href="#cb41-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Single-cell rna-seq analysis using galaxy"</span>,</span>
+<span id="cb41-30"><a href="#cb41-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-31"><a href="#cb41-31" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Keep all other names unchanged</span></span>
+<span id="cb41-32"><a href="#cb41-32" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> workshop</span>
+<span id="cb41-33"><a href="#cb41-33" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb41-34"><a href="#cb41-34" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(attendance_all_years<span class="sc">$</span>workshop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Introduction to programming: r for reproducible scientific analysis"
+ [2] "Introduction to spss"                                               
+ [3] "Introduction to the unix shell - nci"                               
+ [4] "Statistical comparisons using r"                                    
+ [5] "R shiny essentials: from data to interactive dashboards"            
+ [6] "Introduction to programming: plotting and programming with python"  
+ [7] "Statistical comparisons using spss"                                 
+ [8] "Exploring and predicting using linear regression in r"              
+ [9] "Getting started with redcap"                                        
+[10] "Building projects in redcap"                                        
+[11] "Statistical comparisons for hass researchers"                       
+[12] "An introduction to ngs and bioinformatics analysis"                 
+[13] "Redcap advanced project management"                                 
+[14] "Longitudinal and mixed model analysis using r"                      
+[15] "Redcap finalising and running a clinical trial"                     
+[16] "Working with sensitive data"                                        
+[17] "Exploring and predicting using linear regression in spss"           
+[18] "Data visualisation for research communication"                      
+[19] "Single-cell rna-seq analysis using galaxy"                          
+[20] "Single-cell rna-seq analysis using r"                               
+[21] "Analysing categorical outcomes and logistic regression with r"      
+[22] "Containers for reproducible computational environments"             
+[23] "Long-read assembly using galaxy"                                    
+[24] "Genome annotation with apollo"                                      
+[25] "Version control with git - nci"                                     
+[26] "Introduction to high performance computing - nci"                   
+[27] "Introduction to image classification - nci"                         
+[28] "Fundamentals of regression in machine learning - nci"               
+[29] "Fundamentals of classification in machine learning - nci"           
+[30] "Decision trees and ensemble methods in machine learning - nci"      
+[31] "Clustering and unsupervised methods in machine learning - nci"      
+[32] "R for reproducible scientific analysis"                             </code></pre>
+</div>
 </div>
 </section>
-<section id="standardise-inconsistent-variations-in-organisation" class="level4">
-<h4 class="anchored" data-anchor-id="standardise-inconsistent-variations-in-organisation">4.9 Standardise inconsistent variations in organisation</h4>
+<section id="standardise-organisation-names" class="level4">
+<h4 class="anchored" data-anchor-id="standardise-organisation-names"><strong>5.4 Standardise Organisation Names</strong></h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert CQUniversity to Central Queensland University</span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(attendance_all_years<span class="sc">$</span>organisation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert CQUniversity to Central Queensland University</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(attendance_all_years<span class="sc">$</span>organisation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "Central Queensland University"       "Griffith University"                
  [3] "Southern Cross University"           "University of the Sunshine Coast"   
@@ -901,25 +1047,24 @@ how_did_you_find_out_about_this_workshop
  [9] NA                                    "Bond University"                    
 [11] "Queensland Museum"                   "CQUniversity"                       </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">organisation =</span> <span class="fu">case_when</span>(</span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>      organisation <span class="sc">==</span> <span class="st">"CQUniversity"</span> <span class="sc">~</span> <span class="st">"Central Queensland University"</span>,</span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> organisation</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">organisation =</span> <span class="fu">case_when</span>(</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>      organisation <span class="sc">==</span> <span class="st">"CQUniversity"</span> <span class="sc">~</span> <span class="st">"Central Queensland University"</span>,</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> organisation</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-</section>
-<section id="impute-null-values-in-organisation-column" class="level3">
-<h3 class="anchored" data-anchor-id="impute-null-values-in-organisation-column">4.10 Impute null values in organisation column</h3>
+<section id="infer-missing-organisations-from-email-domain" class="level4">
+<h4 class="anchored" data-anchor-id="infer-missing-organisations-from-email-domain"><strong>5.5 Infer Missing Organisations from Email Domain</strong></h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pattern-based inference</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">email_domain =</span> <span class="fu">tolower</span>(<span class="fu">sub</span>(<span class="st">".*@"</span>, <span class="st">""</span>, email))</span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(attendance_all_years<span class="sc">$</span>email_domain)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Pattern-based inference</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">email_domain =</span> <span class="fu">tolower</span>(<span class="fu">sub</span>(<span class="st">".*@"</span>, <span class="st">""</span>, email))</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(attendance_all_years<span class="sc">$</span>email_domain)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  [1] "cqumail.com"                "griffith.edu.au"           
   [3] "student.scu.edu.au"         "griffithuni.edu.au"        
@@ -991,175 +1136,210 @@ how_did_you_find_out_about_this_workshop
 [135] "hernebio.tech"              "federation.edu.au"         
 [137] "justice.qld.gov.au"        </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">organisation_inferred =</span> <span class="fu">case_when</span>(</span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- University of Queensland ----</span></span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"uq"</span>) <span class="sc">~</span> <span class="st">"University of Queensland"</span>,</span>
-<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Central Queensland University ----</span></span>
-<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"cqu"</span>) <span class="sc">~</span> <span class="st">"Central Queensland University"</span>,</span>
-<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Griffith University ----</span></span>
-<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"griffith"</span>) <span class="sc">|</span> </span>
-<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"grififth"</span>) <span class="sc">|</span> </span>
-<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"griffth"</span>) <span class="sc">|</span> </span>
-<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"griffithuni"</span>) <span class="sc">~</span> <span class="st">"Griffith University"</span>,</span>
-<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-17"><a href="#cb47-17" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Southern Cross University ----</span></span>
-<span id="cb47-18"><a href="#cb47-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"scu"</span>) <span class="sc">~</span> <span class="st">"Southern Cross University"</span>,</span>
-<span id="cb47-19"><a href="#cb47-19" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-20"><a href="#cb47-20" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- University of the Sunshine Coast ----</span></span>
-<span id="cb47-21"><a href="#cb47-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"usc"</span>) <span class="sc">~</span> <span class="st">"University of the Sunshine Coast"</span>,</span>
-<span id="cb47-22"><a href="#cb47-22" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-23"><a href="#cb47-23" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- QUT ----</span></span>
-<span id="cb47-24"><a href="#cb47-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"qut"</span>) <span class="sc">~</span> <span class="st">"Queensland University of Technology"</span>,</span>
-<span id="cb47-25"><a href="#cb47-25" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-26"><a href="#cb47-26" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UniSQ (University of Southern Queensland) ----</span></span>
-<span id="cb47-27"><a href="#cb47-27" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"usq"</span>) <span class="sc">|</span> </span>
-<span id="cb47-28"><a href="#cb47-28" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"unisq"</span>) <span class="sc">~</span> <span class="st">"University of Southern Queensland"</span>,</span>
-<span id="cb47-29"><a href="#cb47-29" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-30"><a href="#cb47-30" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- JCU ----</span></span>
-<span id="cb47-31"><a href="#cb47-31" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"jcu"</span>) <span class="sc">~</span> <span class="st">"James Cook University"</span>,</span>
-<span id="cb47-32"><a href="#cb47-32" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-33"><a href="#cb47-33" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Bond ----</span></span>
-<span id="cb47-34"><a href="#cb47-34" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"bond"</span>) <span class="sc">~</span> <span class="st">"Bond University"</span>,</span>
-<span id="cb47-35"><a href="#cb47-35" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-36"><a href="#cb47-36" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UNSW ----</span></span>
-<span id="cb47-37"><a href="#cb47-37" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"unsw"</span>) <span class="sc">~</span> <span class="st">"University of New South Wales"</span>,</span>
-<span id="cb47-38"><a href="#cb47-38" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-39"><a href="#cb47-39" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- University of Sydney ----</span></span>
-<span id="cb47-40"><a href="#cb47-40" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"sydney"</span>) <span class="sc">~</span> <span class="st">"University of Sydney"</span>,</span>
-<span id="cb47-41"><a href="#cb47-41" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-42"><a href="#cb47-42" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- ANU ----</span></span>
-<span id="cb47-43"><a href="#cb47-43" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"anu"</span>) <span class="sc">~</span> <span class="st">"Australian National University"</span>,</span>
-<span id="cb47-44"><a href="#cb47-44" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-45"><a href="#cb47-45" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Monash ----</span></span>
-<span id="cb47-46"><a href="#cb47-46" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"monash"</span>) <span class="sc">~</span> <span class="st">"Monash University"</span>,</span>
-<span id="cb47-47"><a href="#cb47-47" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-48"><a href="#cb47-48" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UTAS ----</span></span>
-<span id="cb47-49"><a href="#cb47-49" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"utas"</span>) <span class="sc">~</span> <span class="st">"University of Tasmania"</span>,</span>
-<span id="cb47-50"><a href="#cb47-50" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-51"><a href="#cb47-51" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Deakin ----</span></span>
-<span id="cb47-52"><a href="#cb47-52" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"deakin"</span>) <span class="sc">~</span> <span class="st">"Deakin University"</span>,</span>
-<span id="cb47-53"><a href="#cb47-53" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-54"><a href="#cb47-54" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UniMelb ----</span></span>
-<span id="cb47-55"><a href="#cb47-55" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"unimelb"</span>) <span class="sc">~</span> <span class="st">"University of Melbourne"</span>,</span>
-<span id="cb47-56"><a href="#cb47-56" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-57"><a href="#cb47-57" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UWA ----</span></span>
-<span id="cb47-58"><a href="#cb47-58" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"uwa"</span>) <span class="sc">~</span> <span class="st">"University of Western Australia"</span>,</span>
-<span id="cb47-59"><a href="#cb47-59" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-60"><a href="#cb47-60" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UniSA ----</span></span>
-<span id="cb47-61"><a href="#cb47-61" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"unisa"</span>) <span class="sc">~</span> <span class="st">"University of South Australia"</span>,</span>
-<span id="cb47-62"><a href="#cb47-62" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-63"><a href="#cb47-63" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- CDU ----</span></span>
-<span id="cb47-64"><a href="#cb47-64" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"cdu"</span>) <span class="sc">~</span> <span class="st">"Charles Darwin University"</span>,</span>
-<span id="cb47-65"><a href="#cb47-65" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-66"><a href="#cb47-66" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Curtin ----</span></span>
-<span id="cb47-67"><a href="#cb47-67" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"curtin"</span>) <span class="sc">~</span> <span class="st">"Curtin University"</span>,</span>
-<span id="cb47-68"><a href="#cb47-68" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-69"><a href="#cb47-69" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Newcastle ----</span></span>
-<span id="cb47-70"><a href="#cb47-70" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"newcastle"</span>) <span class="sc">~</span> <span class="st">"University of Newcastle"</span>,</span>
-<span id="cb47-71"><a href="#cb47-71" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-72"><a href="#cb47-72" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UOW ----</span></span>
-<span id="cb47-73"><a href="#cb47-73" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"uow"</span>) <span class="sc">~</span> <span class="st">"University of Wollongong"</span>,</span>
-<span id="cb47-74"><a href="#cb47-74" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-75"><a href="#cb47-75" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- La Trobe ----</span></span>
-<span id="cb47-76"><a href="#cb47-76" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"ltu"</span>) <span class="sc">~</span> <span class="st">"La Trobe University"</span>,</span>
-<span id="cb47-77"><a href="#cb47-77" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"latrobe"</span>) <span class="sc">~</span> <span class="st">"La Trobe University"</span>,</span>
-<span id="cb47-78"><a href="#cb47-78" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-79"><a href="#cb47-79" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- RMIT ----</span></span>
-<span id="cb47-80"><a href="#cb47-80" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"rmit"</span>) <span class="sc">~</span> <span class="st">"RMIT University"</span>,</span>
-<span id="cb47-81"><a href="#cb47-81" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-82"><a href="#cb47-82" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UniCanberra ----</span></span>
-<span id="cb47-83"><a href="#cb47-83" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"canberra"</span>) <span class="sc">~</span> <span class="st">"University of Canberra"</span>,</span>
-<span id="cb47-84"><a href="#cb47-84" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-85"><a href="#cb47-85" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Federation ----</span></span>
-<span id="cb47-86"><a href="#cb47-86" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"federation"</span>) <span class="sc">~</span> <span class="st">"Federation University"</span>,</span>
-<span id="cb47-87"><a href="#cb47-87" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-88"><a href="#cb47-88" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Massey (NZ) ----</span></span>
-<span id="cb47-89"><a href="#cb47-89" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"mq.edu.au"</span>) <span class="sc">~</span> <span class="st">"Macquarie University"</span>,</span>
-<span id="cb47-90"><a href="#cb47-90" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-91"><a href="#cb47-91" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Overseas Universities ----</span></span>
-<span id="cb47-92"><a href="#cb47-92" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"edu"</span>) <span class="sc">~</span> <span class="st">"International University"</span>,</span>
-<span id="cb47-93"><a href="#cb47-93" aria-hidden="true" tabindex="-1"></a>      </span>
-<span id="cb47-94"><a href="#cb47-94" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Everything else ----</span></span>
-<span id="cb47-95"><a href="#cb47-95" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Non-University / Unknown"</span></span>
-<span id="cb47-96"><a href="#cb47-96" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb47-97"><a href="#cb47-97" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">organisation_inferred =</span> <span class="fu">case_when</span>(</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- University of Queensland ----</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"uq"</span>) <span class="sc">~</span> <span class="st">"University of Queensland"</span>,</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Central Queensland University ----</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"cqu"</span>) <span class="sc">~</span> <span class="st">"Central Queensland University"</span>,</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Griffith University ----</span></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"griffith"</span>) <span class="sc">|</span> </span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"grififth"</span>) <span class="sc">|</span> </span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"griffth"</span>) <span class="sc">|</span> </span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"griffithuni"</span>) <span class="sc">~</span> <span class="st">"Griffith University"</span>,</span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Southern Cross University ----</span></span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"scu"</span>) <span class="sc">~</span> <span class="st">"Southern Cross University"</span>,</span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- University of the Sunshine Coast ----</span></span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"usc"</span>) <span class="sc">~</span> <span class="st">"University of the Sunshine Coast"</span>,</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- QUT ----</span></span>
+<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"qut"</span>) <span class="sc">~</span> <span class="st">"Queensland University of Technology"</span>,</span>
+<span id="cb49-25"><a href="#cb49-25" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-26"><a href="#cb49-26" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UniSQ (University of Southern Queensland) ----</span></span>
+<span id="cb49-27"><a href="#cb49-27" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"usq"</span>) <span class="sc">|</span> </span>
+<span id="cb49-28"><a href="#cb49-28" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"unisq"</span>) <span class="sc">~</span> <span class="st">"University of Southern Queensland"</span>,</span>
+<span id="cb49-29"><a href="#cb49-29" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-30"><a href="#cb49-30" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- JCU ----</span></span>
+<span id="cb49-31"><a href="#cb49-31" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"jcu"</span>) <span class="sc">~</span> <span class="st">"James Cook University"</span>,</span>
+<span id="cb49-32"><a href="#cb49-32" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-33"><a href="#cb49-33" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Bond ----</span></span>
+<span id="cb49-34"><a href="#cb49-34" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"bond"</span>) <span class="sc">~</span> <span class="st">"Bond University"</span>,</span>
+<span id="cb49-35"><a href="#cb49-35" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-36"><a href="#cb49-36" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UNSW ----</span></span>
+<span id="cb49-37"><a href="#cb49-37" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"unsw"</span>) <span class="sc">~</span> <span class="st">"University of New South Wales"</span>,</span>
+<span id="cb49-38"><a href="#cb49-38" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-39"><a href="#cb49-39" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- University of Sydney ----</span></span>
+<span id="cb49-40"><a href="#cb49-40" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"sydney"</span>) <span class="sc">~</span> <span class="st">"University of Sydney"</span>,</span>
+<span id="cb49-41"><a href="#cb49-41" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-42"><a href="#cb49-42" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- ANU ----</span></span>
+<span id="cb49-43"><a href="#cb49-43" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"anu"</span>) <span class="sc">~</span> <span class="st">"Australian National University"</span>,</span>
+<span id="cb49-44"><a href="#cb49-44" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-45"><a href="#cb49-45" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Monash ----</span></span>
+<span id="cb49-46"><a href="#cb49-46" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"monash"</span>) <span class="sc">~</span> <span class="st">"Monash University"</span>,</span>
+<span id="cb49-47"><a href="#cb49-47" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-48"><a href="#cb49-48" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UTAS ----</span></span>
+<span id="cb49-49"><a href="#cb49-49" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"utas"</span>) <span class="sc">~</span> <span class="st">"University of Tasmania"</span>,</span>
+<span id="cb49-50"><a href="#cb49-50" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-51"><a href="#cb49-51" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Deakin ----</span></span>
+<span id="cb49-52"><a href="#cb49-52" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"deakin"</span>) <span class="sc">~</span> <span class="st">"Deakin University"</span>,</span>
+<span id="cb49-53"><a href="#cb49-53" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-54"><a href="#cb49-54" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UniMelb ----</span></span>
+<span id="cb49-55"><a href="#cb49-55" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"unimelb"</span>) <span class="sc">~</span> <span class="st">"University of Melbourne"</span>,</span>
+<span id="cb49-56"><a href="#cb49-56" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-57"><a href="#cb49-57" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UWA ----</span></span>
+<span id="cb49-58"><a href="#cb49-58" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"uwa"</span>) <span class="sc">~</span> <span class="st">"University of Western Australia"</span>,</span>
+<span id="cb49-59"><a href="#cb49-59" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-60"><a href="#cb49-60" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UniSA ----</span></span>
+<span id="cb49-61"><a href="#cb49-61" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"unisa"</span>) <span class="sc">~</span> <span class="st">"University of South Australia"</span>,</span>
+<span id="cb49-62"><a href="#cb49-62" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-63"><a href="#cb49-63" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- CDU ----</span></span>
+<span id="cb49-64"><a href="#cb49-64" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"cdu"</span>) <span class="sc">~</span> <span class="st">"Charles Darwin University"</span>,</span>
+<span id="cb49-65"><a href="#cb49-65" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-66"><a href="#cb49-66" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Curtin ----</span></span>
+<span id="cb49-67"><a href="#cb49-67" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"curtin"</span>) <span class="sc">~</span> <span class="st">"Curtin University"</span>,</span>
+<span id="cb49-68"><a href="#cb49-68" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-69"><a href="#cb49-69" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Newcastle ----</span></span>
+<span id="cb49-70"><a href="#cb49-70" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"newcastle"</span>) <span class="sc">~</span> <span class="st">"University of Newcastle"</span>,</span>
+<span id="cb49-71"><a href="#cb49-71" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-72"><a href="#cb49-72" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UOW ----</span></span>
+<span id="cb49-73"><a href="#cb49-73" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"uow"</span>) <span class="sc">~</span> <span class="st">"University of Wollongong"</span>,</span>
+<span id="cb49-74"><a href="#cb49-74" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-75"><a href="#cb49-75" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- La Trobe ----</span></span>
+<span id="cb49-76"><a href="#cb49-76" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"ltu"</span>) <span class="sc">~</span> <span class="st">"La Trobe University"</span>,</span>
+<span id="cb49-77"><a href="#cb49-77" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"latrobe"</span>) <span class="sc">~</span> <span class="st">"La Trobe University"</span>,</span>
+<span id="cb49-78"><a href="#cb49-78" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-79"><a href="#cb49-79" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- RMIT ----</span></span>
+<span id="cb49-80"><a href="#cb49-80" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"rmit"</span>) <span class="sc">~</span> <span class="st">"RMIT University"</span>,</span>
+<span id="cb49-81"><a href="#cb49-81" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-82"><a href="#cb49-82" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- UniCanberra ----</span></span>
+<span id="cb49-83"><a href="#cb49-83" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"canberra"</span>) <span class="sc">~</span> <span class="st">"University of Canberra"</span>,</span>
+<span id="cb49-84"><a href="#cb49-84" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-85"><a href="#cb49-85" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Federation ----</span></span>
+<span id="cb49-86"><a href="#cb49-86" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"federation"</span>) <span class="sc">~</span> <span class="st">"Federation University"</span>,</span>
+<span id="cb49-87"><a href="#cb49-87" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-88"><a href="#cb49-88" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Massey (NZ) ----</span></span>
+<span id="cb49-89"><a href="#cb49-89" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"mq.edu.au"</span>) <span class="sc">~</span> <span class="st">"Macquarie University"</span>,</span>
+<span id="cb49-90"><a href="#cb49-90" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-91"><a href="#cb49-91" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Overseas Universities ----</span></span>
+<span id="cb49-92"><a href="#cb49-92" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(email_domain, <span class="st">"edu"</span>) <span class="sc">~</span> <span class="st">"International University"</span>,</span>
+<span id="cb49-93"><a href="#cb49-93" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb49-94"><a href="#cb49-94" aria-hidden="true" tabindex="-1"></a>      <span class="co"># ---- Everything else ----</span></span>
+<span id="cb49-95"><a href="#cb49-95" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Non-University / Unknown"</span></span>
+<span id="cb49-96"><a href="#cb49-96" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-97"><a href="#cb49-97" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">organisation =</span> <span class="fu">if_else</span>(</span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(organisation) <span class="sc">|</span> organisation <span class="sc">==</span> <span class="st">""</span>,</span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>      organisation_inferred,</span>
-<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>      organisation</span>
-<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>organisation_inferred)</span>
-<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(attendance_all_years<span class="sc">$</span>organisation))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0</code></pre>
-</div>
-</div>
-<section id="generate-student-id-hashed" class="level4">
-<h4 class="anchored" data-anchor-id="generate-student-id-hashed">4.11 Generate Student ID (Hashed)</h4>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize and Generate Student ID</span></span>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply inference only to missing entries:</span></span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
 <span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">email =</span> <span class="fu">tolower</span>(<span class="fu">trimws</span>(email)),</span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">student_id =</span> <span class="fu">digest</span>(<span class="fu">paste</span>(</span>
-<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coalesce</span>(email, <span class="st">""</span>)</span>
-<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">algo =</span> <span class="st">"sha256"</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">organisation =</span> <span class="fu">if_else</span>(</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(organisation) <span class="sc">|</span> organisation <span class="sc">==</span> <span class="st">""</span>,</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>      organisation_inferred,</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>      organisation</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>organisation_inferred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="standardize-month-values" class="level4">
+<h4 class="anchored" data-anchor-id="standardize-month-values"><strong>5.6 Standardize Month Values</strong></h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(attendance_all_years<span class="sc">$</span>month)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" NA    "Sep" "Oct" "Nov" "Dec"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(attendance_all_years<span class="sc">$</span>month))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View rows where month is missing</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(month)) <span class="sc">%&gt;%</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(workshop, event_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                           workshop event_date
+1 Introduction to programming: plotting and programming with python 2024-08-06</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if any email is linked to more than one student ID</span></span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(email) <span class="sc">%&gt;%</span></span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">unique_ids =</span> <span class="fu">n_distinct</span>(student_id)) <span class="sc">%&gt;%</span></span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(unique_ids <span class="sc">&gt;</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract month directly from event_date</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Get month from event_date</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">event_month =</span> lubridate<span class="sc">::</span><span class="fu">month</span>(event_date, <span class="at">label =</span> <span class="cn">TRUE</span>, <span class="at">abbr =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Replace NA in month with event_month</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">month =</span> dplyr<span class="sc">::</span><span class="fu">coalesce</span>(month, <span class="fu">as.character</span>(event_month))</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>event_month)  <span class="co"># Remove the temporary helper column</span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(attendance_all_years<span class="sc">$</span>month)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Feb" "Mar" "Apr" "May" "Jun" "Jul" "Aug" "Sep" "Oct" "Nov" "Dec"</code></pre>
+</div>
+</div>
+</section>
+<section id="generate-hashed-student-id" class="level4">
+<h4 class="anchored" data-anchor-id="generate-hashed-student-id"><strong>5.7 Generate Hashed Student ID</strong></h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize and Generate Student ID</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">email =</span> <span class="fu">tolower</span>(<span class="fu">trimws</span>(email)),</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rowwise</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">student_id =</span> <span class="fu">digest</span>(<span class="fu">paste</span>(</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">coalesce</span>(email, <span class="st">""</span>)</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>  ), <span class="at">algo =</span> <span class="st">"sha256"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="remove-duplicate-participantworkshop-records" class="level4">
+<h4 class="anchored" data-anchor-id="remove-duplicate-participantworkshop-records"><strong>5.8 Remove Duplicate Participant–Workshop Records</strong></h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if any email is linked to more than one student ID</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(email) <span class="sc">%&gt;%</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">unique_ids =</span> <span class="fu">n_distinct</span>(student_id)) <span class="sc">%&gt;%</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(unique_ids <span class="sc">&gt;</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 0 × 2
 # ℹ 2 variables: email &lt;chr&gt;, unique_ids &lt;int&gt;</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify and inspect records where the same email is associated with multiple student IDs</span></span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(email <span class="sc">%in%</span> (</span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(email) <span class="sc">%&gt;%</span></span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(<span class="at">unique_ids =</span> <span class="fu">n_distinct</span>(student_id)) <span class="sc">%&gt;%</span></span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(unique_ids <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">pull</span>(email)</span>
-<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
-<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(email, first_name, last_name,student_id) <span class="sc">%&gt;%</span></span>
-<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(email)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify and inspect records where the same email is associated with multiple student IDs</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(email <span class="sc">%in%</span> (</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>    attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(email) <span class="sc">%&gt;%</span></span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(<span class="at">unique_ids =</span> <span class="fu">n_distinct</span>(student_id)) <span class="sc">%&gt;%</span></span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">filter</span>(unique_ids <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">pull</span>(email)</span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(email, first_name, last_name,student_id) <span class="sc">%&gt;%</span></span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(email)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 0 × 4
 # ℹ 4 variables: email &lt;chr&gt;, first_name &lt;chr&gt;, last_name &lt;chr&gt;,
 #   student_id &lt;chr&gt;</code></pre>
 </div>
 </div>
-</section>
-<section id="identify-and-remove-duplicate-participantevent-records-same-email-registered-multiple-times-for-same-workshop" class="level4">
-<h4 class="anchored" data-anchor-id="identify-and-remove-duplicate-participantevent-records-same-email-registered-multiple-times-for-same-workshop">4.11 Identify and Remove Duplicate Participant–Event Records (same email registered multiple times for same workshop)</h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify Duplicate Registrations (Same Email + Event)</span></span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(student_id, workshop) <span class="sc">%&gt;%</span></span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n <span class="sc">&gt;</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify Duplicate Registrations (Same patricipant + Event)</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(student_id, workshop) <span class="sc">%&gt;%</span></span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(n <span class="sc">&gt;</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 322 × 3
+<pre><code># A tibble: 365 × 3
    student_id                                                     workshop     n
    &lt;chr&gt;                                                          &lt;chr&gt;    &lt;int&gt;
  1 005761e1728182d5f2fac081b5eeee96f65b308d02c5f347e27babff01569… Introdu…     2
@@ -1172,12 +1352,12 @@ how_did_you_find_out_about_this_workshop
  8 0386d111981e4555a2600b29e6312bd84337ba39a2ced8a8e639eb7324bbf… Decisio…     2
  9 0386d111981e4555a2600b29e6312bd84337ba39a2ced8a8e639eb7324bbf… Introdu…     2
 10 04bc6e43f139b24838aae7a5667a8e2e6aca5c0fd1ddba877adc43bf97939… Statist…     2
-# ℹ 312 more rows</code></pre>
+# ℹ 355 more rows</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">duplicated</span>(<span class="fu">select</span>(., student_id, workshop)) <span class="sc">|</span> <span class="fu">duplicated</span>(<span class="fu">select</span>(., student_id, workshop), <span class="at">fromLast =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">duplicated</span>(<span class="fu">select</span>(., student_id, workshop)) <span class="sc">|</span> <span class="fu">duplicated</span>(<span class="fu">select</span>(., student_id, workshop), <span class="at">fromLast =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 706 × 37
+<pre><code># A tibble: 810 × 37
    first_name    last_name   ticket_type  order_id ticket_no order_date_time    
    &lt;chr&gt;         &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt;     &lt;dttm&gt;             
  1 Jinyun        Cai         QCIF Members 2F3JYTKS 1st       2024-01-31 14:50:00
@@ -1190,7 +1370,7 @@ how_did_you_find_out_about_this_workshop
  8 Paula         Gomez       QCIF Members BAFC8PTV 1st       2024-01-12 13:36:00
  9 Cameron       Leckie      QCIF Members HRKVPDMP 1st       2024-02-09 20:37:00
 10 Francisca     Diaz-Aviles QCIF Members T6KHLP5F 1st       2024-02-09 10:25:00
-# ℹ 696 more rows
+# ℹ 800 more rows
 # ℹ 31 more variables: timezone &lt;chr&gt;, buyer_first_name &lt;chr&gt;,
 #   buyer_last_name &lt;chr&gt;, buyer_mobile &lt;chr&gt;, buyer_email &lt;chr&gt;, email &lt;chr&gt;,
 #   mobile &lt;chr&gt;, i_am &lt;chr&gt;, organisation &lt;chr&gt;, school_or_faculty &lt;chr&gt;,
@@ -1198,233 +1378,234 @@ how_did_you_find_out_about_this_workshop
 #   humanitix_absorbed_fees &lt;chr&gt;, amex_surcharge &lt;chr&gt;, refunds &lt;chr&gt;,
 #   your_earnings &lt;chr&gt;, refunded_fees &lt;chr&gt;, discount_redeemed &lt;chr&gt;, …</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># remove duplicate participant-event records</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(student_id, workshop, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co"># remove duplicate participant-event records</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(student_id, workshop, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-</section>
-<section id="summaries" class="level3">
-<h3 class="anchored" data-anchor-id="summaries">05 Summaries</h3>
-<p>This section provides a summary of workshop participation, including total records, number of unique participants, participants by workshop and date, and the number of workshops attended per person.</p>
+<section id="classify-member-vs-non-member" class="level4">
+<h4 class="anchored" data-anchor-id="classify-member-vs-non-member"><strong>5.9 Classify Member vs Non-Member</strong></h4>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total rows and columns</span></span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>data_summary <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">total_rows =</span> <span class="fu">nrow</span>(attendance_all_years),</span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">total_columns =</span> <span class="fu">ncol</span>(attendance_all_years)</span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>data_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 2
-  total_rows total_columns
-       &lt;int&gt;         &lt;int&gt;
-1       4867            37</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total number of unique participants</span></span>
-<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">unique_participants =</span> <span class="fu">n_distinct</span>(student_id))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 1
-  unique_participants
-                &lt;int&gt;
-1                2339</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total participants by workshop/event</span></span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(workshop) <span class="sc">%&gt;%</span></span>
-<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_participants =</span> <span class="fu">n_distinct</span>(student_id)) <span class="sc">%&gt;%</span></span>
-<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(total_participants))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 41 × 2
-   workshop                                                   total_participants
-   &lt;chr&gt;                                                                   &lt;int&gt;
- 1 Introduction to programming: r for reproducible scientifi…                507
- 2 Statistical comparisons using r                                           333
- 3 Introduction to spss                                                      304
- 4 Introduction to programming: plotting and programming in …                291
- 5 Data visualisation for research communication                             286
- 6 Longitudinal and mixed model analysis using r                             237
- 7 Exploring and predicting using linear regression in r                     230
- 8 Statistical comparisons using spss                                        219
- 9 Version control with git - nci                                            203
-10 Introduction to the unix shell - nci                                      165
-# ℹ 31 more rows</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Total participants by workshop and date</span></span>
-<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(workshop, event_date) <span class="sc">%&gt;%</span></span>
-<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_participants =</span> <span class="fu">n_distinct</span>(student_id)) <span class="sc">%&gt;%</span></span>
-<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(workshop, event_date)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'workshop'. You can override using the
-`.groups` argument.</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 154 × 3
-# Groups:   workshop [41]
-   workshop                                        event_date total_participants
-   &lt;chr&gt;                                           &lt;date&gt;                  &lt;int&gt;
- 1 An introduction to ngs and bioinformatics anal… 2024-03-15                 36
- 2 An introduction to ngs and bioinformatics anal… 2024-09-03                 28
- 3 An introduction to ngs and bioinformatics anal… 2025-04-07                 33
- 4 Analysing categorical outcomes and logistic re… 2024-05-16                 31
- 5 Analysing categorical outcomes and logistic re… 2024-10-03                 15
- 6 Building projects in redcap                     2025-07-30                 22
- 7 Clustering and unsupervised methods in machine… 2025-07-29                 63
- 8 Containers for reproducible computational envi… 2024-05-27                 21
- 9 Containers for reproducible computational envi… 2024-07-24                  8
-10 Containers for reproducible computational envi… 2024-10-29                  2
-# ℹ 144 more rows</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of workshops attended per person</span></span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(student_id) <span class="sc">%&gt;%</span></span>
-<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">workshops_attended =</span> <span class="fu">n_distinct</span>(workshop)) <span class="sc">%&gt;%</span></span>
-<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(workshops_attended))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2,339 × 2
-   student_id                                                 workshops_attended
-   &lt;chr&gt;                                                                   &lt;int&gt;
- 1 e388717aef349f3da7b87b3d8ed8e28587eee707d2fcc1f1050ae755a…                 24
- 2 89b3ba8638ea1b0cdb4d1580c7a5727c05ed639c679df0d1317bc4aea…                 19
- 3 a16a6ed3e2ca834f6a7a23151b0270e05dd15129875d65a9c204c66a3…                 18
- 4 c96f45b5f20b0044f397da208802948321b0dffb95eef8f100a5a41d3…                 14
- 5 cafa1145fe5c7ba8ff448549921968ce5afd16a9beed9d0bc227c3dd4…                 14
- 6 1a9bbd7c90134ccf0ce7979bad3b9dfdac2f923f12494a76d8c5138f8…                 13
- 7 5330f0b39c8dcf378d78ac10be83b442ebc2f680cbe0e2db3741a062f…                 13
- 8 c6de3dc52a1b2c7b7ca01102116047d8f52e9c37257b2bfa29f29229d…                 13
- 9 76cfe27b14d9d1718577bbcb2147b76b6b144be62db4d5bf19946800e…                 12
-10 84fad272fd2513b029296dedc42dac60b052cd925a426b624eda3fe49…                 12
-# ℹ 2,329 more rows</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of unique participants per workshop, by institution</span></span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(organisation, workshop) <span class="sc">%&gt;%</span></span>
-<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">unique_participants =</span> <span class="fu">n_distinct</span>(student_id)) <span class="sc">%&gt;%</span></span>
-<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(unique_participants))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'organisation'. You can override using the
-`.groups` argument.</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 469 × 3
-   organisation                        workshop              unique_participants
-   &lt;chr&gt;                               &lt;chr&gt;                               &lt;int&gt;
- 1 University of Queensland            Introduction to prog…                 127
- 2 Griffith University                 Introduction to prog…                 106
- 3 Queensland University of Technology Introduction to prog…                  97
- 4 University of Queensland            Statistical comparis…                  76
- 5 Queensland University of Technology Introduction to prog…                  75
- 6 University of Queensland            Introduction to prog…                  69
- 7 Queensland University of Technology Introduction to spss                   66
- 8 Queensland University of Technology Statistical comparis…                  65
- 9 Griffith University                 Introduction to prog…                  63
-10 Griffith University                 Data visualisation f…                  59
-# ℹ 459 more rows</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="ot">&lt;-</span> attendance_all_years <span class="sc">%&gt;%</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">member_status =</span> <span class="fu">case_when</span>(</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(ticket_type, <span class="fu">regex</span>(<span class="st">"QCIF</span><span class="sc">\\</span><span class="st">s*Member"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"member"</span>,</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(ticket_type, <span class="fu">regex</span>(<span class="st">"QCIF</span><span class="sc">\\</span><span class="st">s*Members"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"member"</span>,</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(ticket_type, <span class="fu">regex</span>(<span class="st">"QCIF</span><span class="sc">\\</span><span class="st">s*Associate"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)) <span class="sc">~</span> <span class="st">"member"</span>,</span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"non_member"</span></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="visualizations" class="level3">
-<h3 class="anchored" data-anchor-id="visualizations">06 Visualizations</h3>
-<p>This section presents visual insights from the cleaned attendance data, including workshop popularity, attendance trends over time, and participant engagement patterns.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Top 10 Workshops by Number of Participants</span></span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(workshop) <span class="sc">%&gt;%</span></span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_participants =</span> <span class="fu">n_distinct</span>(student_id)) <span class="sc">%&gt;%</span></span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(total_participants)) <span class="sc">%&gt;%</span></span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">20</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(workshop, total_participants), <span class="at">y =</span> total_participants)) <span class="sc">+</span></span>
-<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#0073C2FF"</span>, <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> total_participants), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Top 20 Workshops by Number of Participants"</span>,</span>
-<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Workshop (Event)"</span>,</span>
-<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Unique Participants"</span></span>
-<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02_data_cleaning_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Line chart – participation trend across time</span></span>
-<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(event_date) <span class="sc">%&gt;%</span></span>
-<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_participants =</span> <span class="fu">n_distinct</span>(student_id)) <span class="sc">%&gt;%</span></span>
-<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> event_date, <span class="at">y =</span> total_participants)) <span class="sc">+</span></span>
-<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#2E8B57"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"#2E8B57"</span>) <span class="sc">+</span></span>
-<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(</span>
-<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">date_breaks =</span> <span class="st">"1 month"</span>,</span>
-<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">date_labels =</span> <span class="st">"%b %Y"</span></span>
-<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
-<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">100</span>, <span class="at">by =</span> <span class="dv">10</span>),</span>
-<span id="cb75-14"><a href="#cb75-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> scales<span class="sc">::</span>comma</span>
-<span id="cb75-15"><a href="#cb75-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb75-16"><a href="#cb75-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb75-17"><a href="#cb75-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Attendance Trends Over Time for QCIF Workshops"</span>,</span>
-<span id="cb75-18"><a href="#cb75-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Event Date"</span>,</span>
-<span id="cb75-19"><a href="#cb75-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Total Participants"</span></span>
-<span id="cb75-20"><a href="#cb75-20" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb75-21"><a href="#cb75-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb75-22"><a href="#cb75-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb75-23"><a href="#cb75-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
-<span id="cb75-24"><a href="#cb75-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x  =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)</span>
-<span id="cb75-25"><a href="#cb75-25" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` instead.</code></pre>
-</div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02_data_cleaning_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Most active participants</span></span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>attendance_all_years <span class="sc">%&gt;%</span></span>
-<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(student_id) <span class="sc">%&gt;%</span></span>
-<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">workshops_attended =</span> <span class="fu">n_distinct</span>(workshop)) <span class="sc">%&gt;%</span></span>
-<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(workshops_attended)) <span class="sc">%&gt;%</span></span>
-<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span>  <span class="co"># top 10 participants</span></span>
-<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(student_id, workshops_attended), <span class="at">y =</span> workshops_attended)) <span class="sc">+</span></span>
-<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#FF8C00"</span>, <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> workshops_attended), <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Top 10 Participants by Workshops Attended"</span>,</span>
-<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Participant (student_id)"</span>,</span>
-<span id="cb77-14"><a href="#cb77-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Workshops Attended"</span></span>
-<span id="cb77-15"><a href="#cb77-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb77-16"><a href="#cb77-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
-<span id="cb77-17"><a href="#cb77-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="02_data_cleaning_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
 </section>
 <section id="save-cleaned-dataset" class="level3">
-<h3 class="anchored" data-anchor-id="save-cleaned-dataset">07 Save Cleaned Dataset</h3>
+<h3 class="anchored" data-anchor-id="save-cleaned-dataset">06 Save Cleaned Dataset</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co"># write.csv(attendance_all_years,</span></span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>          <span class="co">#file.path(output_dir, "attendance_all_years_cleaned.csv"),</span></span>
-<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>          <span class="co">#row.names = FALSE)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(attendance_all_years,</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>         <span class="fu">file.path</span>(output_dir, <span class="st">"attendance_all_years_cleaned.csv"</span>),</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(attendance_all_years,</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">file.path</span>(output_dir, <span class="st">"attendance_cleaned.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="merge-with-workshop-prices" class="level3">
+<h3 class="anchored" data-anchor-id="merge-with-workshop-prices">07. Merge with Workshop Prices</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>workshop_price <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data"</span>,<span class="st">"2025_workshop_price.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 34 Columns: 4
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (2): code, workshop
+dbl (2): price, time_hr
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>attendance_all_years_cleaned <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">here</span>(<span class="st">"output"</span>, <span class="st">"attendance_cleaned.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardise workshop names in price file</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>workshop_price <span class="ot">&lt;-</span> workshop_price <span class="sc">%&gt;%</span></span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">workshop =</span> workshop <span class="sc">%&gt;%</span> </span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_to_lower</span>() <span class="sc">%&gt;%</span>      <span class="co"># all lowercase</span></span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_squish</span>() <span class="sc">%&gt;%</span>        <span class="co"># remove extra spaces</span></span>
+<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_to_sentence</span>()       <span class="co"># capitalize first letter</span></span>
+<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a>att_ws <span class="ot">&lt;-</span> <span class="fu">unique</span>(attendance_all_years_cleaned<span class="sc">$</span>workshop)</span>
+<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a>price_ws <span class="ot">&lt;-</span> <span class="fu">unique</span>(workshop_price<span class="sc">$</span>workshop)</span>
+<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Workshops in attendance but NOT in price file</span></span>
+<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(att_ws, price_ws)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>character(0)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Workshops in price file but NOT in attendance</span></span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(price_ws, att_ws)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Redcap workshop series"             "Large language models for research"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>workshop_price <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">is.na</span>(workshop))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 0 × 4
+# ℹ 4 variables: code &lt;chr&gt;, workshop &lt;chr&gt;, price &lt;dbl&gt;, time_hr &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>workshop_price <span class="ot">&lt;-</span> workshop_price <span class="sc">%&gt;%</span></span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>    <span class="sc">!</span>workshop <span class="sc">%in%</span> <span class="fu">c</span>(</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Redcap workshop series"</span>,</span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Large language models for research"</span></span>
+<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="co"># merge</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>attendance_merged <span class="ot">&lt;-</span> attendance_all_years_cleaned <span class="sc">%&gt;%</span></span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(workshop_price, <span class="at">by =</span> <span class="st">"workshop"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="apply-member-pricing-rule" class="level3">
+<h3 class="anchored" data-anchor-id="apply-member-pricing-rule">08. Apply Member Pricing Rule</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb82"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a>attendance_merged <span class="ot">&lt;-</span> attendance_merged <span class="sc">%&gt;%</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">price =</span> <span class="fu">if_else</span>(member_status <span class="sc">==</span> <span class="st">"member"</span>, <span class="dv">0</span>, price)</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="categorize-workshops-into-qcif-training-themes" class="level4">
+<h4 class="anchored" data-anchor-id="categorize-workshops-into-qcif-training-themes">09. Categorize Workshops into QCIF Training Themes</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a>attendance_merged<span class="sc">$</span>category <span class="ot">&lt;-</span> <span class="fu">case_when</span>(</span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Programming</span></span>
+<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">"programming|python|r shiny|visualisation|dashboards|reproducible|containers"</span>, </span>
+<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>        attendance_merged<span class="sc">$</span>workshop, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">"Programming &amp; Data Skills"</span>,</span>
+<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Statistics</span></span>
+<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">"spss|statistical|regression|mixed model|predicting|categorical outcomes"</span>, </span>
+<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a>        attendance_merged<span class="sc">$</span>workshop, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">"Statistics &amp; Data Analysis"</span>,</span>
+<span id="cb83-10"><a href="#cb83-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb83-11"><a href="#cb83-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Clinical / REDCap</span></span>
+<span id="cb83-12"><a href="#cb83-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">"redcap|clinical trial"</span>, </span>
+<span id="cb83-13"><a href="#cb83-13" aria-hidden="true" tabindex="-1"></a>        attendance_merged<span class="sc">$</span>workshop, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">"Clinical / REDCap"</span>,</span>
+<span id="cb83-14"><a href="#cb83-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb83-15"><a href="#cb83-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Bioinformatics</span></span>
+<span id="cb83-16"><a href="#cb83-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">"bioinformatics|ngs|rna|galaxy|genome|annotation"</span>, </span>
+<span id="cb83-17"><a href="#cb83-17" aria-hidden="true" tabindex="-1"></a>        attendance_merged<span class="sc">$</span>workshop, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">"Bioinformatics"</span>,</span>
+<span id="cb83-18"><a href="#cb83-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb83-19"><a href="#cb83-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># HPC / Git / Unix / ML</span></span>
+<span id="cb83-20"><a href="#cb83-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grepl</span>(<span class="st">"unix|git|HPC|NCI|machine learning|classification|image classification|clustering|ensemble"</span>, </span>
+<span id="cb83-21"><a href="#cb83-21" aria-hidden="true" tabindex="-1"></a>        attendance_merged<span class="sc">$</span>workshop, <span class="at">ignore.case =</span> <span class="cn">TRUE</span>) <span class="sc">~</span> <span class="st">"HPC / Git / Unix / ML"</span>,</span>
+<span id="cb83-22"><a href="#cb83-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb83-23"><a href="#cb83-23" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Other"</span></span>
+<span id="cb83-24"><a href="#cb83-24" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="remove---nci-branding" class="level3">
+<h3 class="anchored" data-anchor-id="remove---nci-branding">9.1 Remove “ - NCI” branding</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb84"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" aria-hidden="true" tabindex="-1"></a>attendance_merged <span class="ot">&lt;-</span> attendance_merged <span class="sc">%&gt;%</span></span>
+<span id="cb84-2"><a href="#cb84-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb84-3"><a href="#cb84-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">workshop =</span> workshop <span class="sc">%&gt;%</span></span>
+<span id="cb84-4"><a href="#cb84-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_replace</span>(<span class="fu">regex</span>(<span class="st">"[-–]?</span><span class="sc">\\</span><span class="st">s*NCI"</span>, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>), <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb84-5"><a href="#cb84-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_trim</span>()</span>
+<span id="cb84-6"><a href="#cb84-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb84-7"><a href="#cb84-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb84-8"><a href="#cb84-8" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(attendance_merged<span class="sc">$</span>workshop)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Introduction to programming: r for reproducible scientific analysis"
+ [2] "Introduction to spss"                                               
+ [3] "Introduction to the unix shell"                                     
+ [4] "Statistical comparisons using r"                                    
+ [5] "R shiny essentials: from data to interactive dashboards"            
+ [6] "Introduction to programming: plotting and programming with python"  
+ [7] "Statistical comparisons using spss"                                 
+ [8] "Exploring and predicting using linear regression in r"              
+ [9] "Getting started with redcap"                                        
+[10] "Building projects in redcap"                                        
+[11] "Statistical comparisons for hass researchers"                       
+[12] "An introduction to ngs and bioinformatics analysis"                 
+[13] "Redcap advanced project management"                                 
+[14] "Longitudinal and mixed model analysis using r"                      
+[15] "Redcap finalising and running a clinical trial"                     
+[16] "Working with sensitive data"                                        
+[17] "Exploring and predicting using linear regression in spss"           
+[18] "Data visualisation for research communication"                      
+[19] "Single-cell rna-seq analysis using galaxy"                          
+[20] "Single-cell rna-seq analysis using r"                               
+[21] "Analysing categorical outcomes and logistic regression with r"      
+[22] "Containers for reproducible computational environments"             
+[23] "Long-read assembly using galaxy"                                    
+[24] "Genome annotation with apollo"                                      
+[25] "Version control with git"                                           
+[26] "Introduction to high performance computing"                         
+[27] "Introduction to image classification"                               
+[28] "Fundamentals of regression in machine learning"                     
+[29] "Fundamentals of classification in machine learning"                 
+[30] "Decision trees and ensemble methods in machine learning"            
+[31] "Clustering and unsupervised methods in machine learning"            
+[32] "R for reproducible scientific analysis"                             </code></pre>
+</div>
+</div>
+</section>
+<section id="save-final-transformed-dataset" class="level3">
+<h3 class="anchored" data-anchor-id="save-final-transformed-dataset">10. Save Final Transformed Dataset</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(attendance_merged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 4,806
+Columns: 42
+$ first_name                               &lt;chr&gt; "Alexandra Anne", "Jacob", "J…
+$ last_name                                &lt;chr&gt; "Williams", "Batham", "Fabell…
+$ ticket_type                              &lt;chr&gt; "QCIF Members", "QCIF Members…
+$ order_id                                 &lt;chr&gt; "MNVXUKLJ", "DVF54NPF", "Q42S…
+$ ticket_no                                &lt;chr&gt; "1st", "1st", "1st", "1st", "…
+$ order_date_time                          &lt;dttm&gt; 2024-02-01 13:39:00, 2024-02…
+$ timezone                                 &lt;chr&gt; "AEST", "AEST", "AEST", "AEST…
+$ buyer_first_name                         &lt;chr&gt; "Alexandra Anne", "Jacob", "J…
+$ buyer_last_name                          &lt;chr&gt; "Williams", "Batham", "Fabell…
+$ buyer_mobile                             &lt;chr&gt; "+61408189840", "0408795912",…
+$ buyer_email                              &lt;chr&gt; "alexandra.williams@cqumail.c…
+$ email                                    &lt;chr&gt; "alexandra.williams@cqumail.c…
+$ mobile                                   &lt;chr&gt; "+61408189840", "0408795912",…
+$ i_am                                     &lt;chr&gt; "Higher Degree Research Stude…
+$ organisation                             &lt;chr&gt; "Central Queensland Universit…
+$ school_or_faculty                        &lt;chr&gt; "CMERC", "NCNED", "Faculty of…
+$ how_did_you_find_out_about_this_workshop &lt;chr&gt; "Supervisor", "Supervisor", "…
+$ paid                                     &lt;chr&gt; "$0.00", "$0.00", "$0.00", "$…
+$ humanitix_absorbed_fees                  &lt;chr&gt; "$0.00", "$0.00", "$0.00", "$…
+$ amex_surcharge                           &lt;chr&gt; "$0.00", "$0.00", "$0.00", "$…
+$ refunds                                  &lt;chr&gt; "$0.00", "$0.00", "$0.00", "$…
+$ your_earnings                            &lt;chr&gt; "$0.00", "$0.00", "$0.00", "$…
+$ refunded_fees                            &lt;chr&gt; "$0.00", "$0.00", "$0.00", "$…
+$ discount_redeemed                        &lt;chr&gt; "$0.00", "$0.00", "$0.00", "$…
+$ tax_on_sales                             &lt;chr&gt; "$0.00", "$0.00", "$0.00", "$…
+$ gateway                                  &lt;chr&gt; "braintree", "braintree", "br…
+$ event_date                               &lt;date&gt; 2024-02-05, 2024-02-05, 2024…
+$ event_time                               &lt;chr&gt; "9:00 am - 12:30 pm", "9:00 a…
+$ qr_code_data                             &lt;chr&gt; "{\"eventId\":\"65812412e991e…
+$ sales_channel                            &lt;chr&gt; "Online", "Online", "Online",…
+$ workshop                                 &lt;chr&gt; "Introduction to programming:…
+$ month                                    &lt;chr&gt; "Feb", "Feb", "Feb", "Feb", "…
+$ year                                     &lt;int&gt; 2024, 2024, 2024, 2024, 2024,…
+$ order_date                               &lt;date&gt; 2024-02-01, 2024-02-01, 2024…
+$ order_time                               &lt;chr&gt; "13:39:00", "13:22:00", "21:1…
+$ email_domain                             &lt;chr&gt; "cqumail.com", "griffith.edu.…
+$ student_id                               &lt;chr&gt; "5ab4065f59ac974b89ccb79845d6…
+$ member_status                            &lt;chr&gt; "member", "member", "member",…
+$ code                                     &lt;chr&gt; "15_01_049", "15_01_049", "15…
+$ price                                    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
+$ time_hr                                  &lt;dbl&gt; 14, 14, 14, 14, 14, 14, 14, 1…
+$ category                                 &lt;chr&gt; "Programming &amp; Data Skills", …</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(attendance_merged, </span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>        <span class="fu">file.path</span>(output_dir, <span class="st">"attendance_with_prices.rds"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 

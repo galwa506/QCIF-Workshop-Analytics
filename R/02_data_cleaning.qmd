@@ -33,11 +33,29 @@ This section checks the structure of the attendance dataset and counts missing v
 glimpse(attendance_all_years)
 str(attendance_all_years)
 sum(is.na(attendance_all_years))
+
+# Total rows and columns
+dataset_summary <- tibble::tibble(
+total_rows = nrow(attendance_all_years),
+total_columns = ncol(attendance_all_years),
+unique_workshops = n_distinct(attendance_all_years$workshop),
+unique_organisations = n_distinct(attendance_all_years$organisation),
+)
+
+dataset_summary
+
+cat(
+  "The dataset contains", dataset_summary$total_rows, "rows and",
+  dataset_summary$total_columns, "columns.\n",
+  dataset_summary$unique_workshops, "unique workshops, and\n",
+  dataset_summary$unique_organisations, "unique organisations represented.\n"
+)
+
 ```
 
 ### 04. Data Cleaning
 
-This section standardises column names, removes redundant fields, handles missing values, and prepares the dataset for analysis.
+This section standardizes column names, removes redundant fields, handles missing values, and prepares the dataset for analysis.
 
 #### 4.1 Check Potential Duplicate Columns
 
@@ -93,7 +111,7 @@ duplicates <- attendance_all_years[duplicated(attendance_all_years), ]
 head(duplicates)
 ```
 
-#### 4.6 Remove Columns with \>80% Missing Values
+#### 4.6 Remove Columns with >80% Missing Values
 
 ```{r}
 # Calculate and sort missing value percentages by column
@@ -533,7 +551,6 @@ attendance_merged <- attendance_merged %>%
       str_replace(regex("[-–]?\\s*NCI", ignore_case = TRUE), "") %>%
       str_trim()
   )
-
 
 unique(attendance_merged$workshop)
 
