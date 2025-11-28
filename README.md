@@ -26,12 +26,14 @@ QQCIF-Workshop-Analytics/
 │   ├── 03_data_analysis.qmd       # Summary tables and exploratory analysis (no outputs saved)
 │
 ├── data/
-│   ├── raw/                       # Raw attendance/waitlist datasets (ignored)
-│   ├── cleaned/                   # Cleaned and integrated datasets
+│   ├── 2024/                      # Raw attendance/waitlist datasets 2024 (ignored)
+│   ├── 2025/                      # Raw attendance/waitlist datasets 2025 (ignored)
+    ├── 2025_workshop_price.csv/   Pricing lookup data (ignored)
 │
 ├── output/
-│   ├── reports/                   # Optional knitted reports (ignored)
-│
+│   ├── cleaned/                   # Final cleaned datasets (ignored)
+│   ├── merged/                    # Intermediate merged files (ignored)
+
 ├── .gitignore                     # Excludes HTML, PNG, knit folders, raw data
 ├── renv.lock                      # Ensures reproducible R environment
 ├── QCIF-Workshop-Analytics.Rproj  # RStudio project file
